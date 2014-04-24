@@ -59,8 +59,6 @@ function selectCell(point) {
     grid.traverse(function(e) {
         if (e instanceof THREE.Mesh && e.name.split('-')[0] === 'avatar' ) {
             if (Math.floor(e.position.x) === x && Math.floor(e.position.z) === y) {
-                selector.position.x = x + 0.5;
-                selector.position.z = y + 0.5;
                 selectAvatar(e);
                 return;
             }
@@ -70,35 +68,23 @@ function selectCell(point) {
     // escape if no avatar is selected
     if (!selectedAvatar) { return; }
 
-    // set cell as goal...
-    var dir = new THREE.Vector3( x + 0.5 - selectedAvatar.position.x , 0, y + 0.5 - selectedAvatar.position.z );
-    var origin = new THREE.Vector3( selectedAvatar.position.x, 0.01, selectedAvatar.position.z );
-    var length = origin.distanceTo(new THREE.Vector3(x + 0.5, 0.01, y + 0.5));
-    var color = 0xffff00;
+    // create movement arrow
+    /*var dir = new THREE.Vector3( x + 0.5 - selectedAvatar.position.x , 0, y + 0.5 - selectedAvatar.position.z );
+    var origin = new THREE.Vector3( selectedAvatar.position.x, 0.005, selectedAvatar.position.z );
+    var length = origin.distanceTo(new THREE.Vector3(x + 0.5, 0.005, y + 0.5));
+    var color = 0xff9900; // Math.floor(Math.random() * 16777215);
+    var arrowHelper = new THREE.ArrowHelper( dir, origin, length, color, 0.1, 0.1 );
+    grid.add( arrowHelper );*/
 
-    /*var a = selectedAvatar.position.x - (x + 0.5);
-    var b = selectedAvatar.position.z - (y + 0.5);
-    var length = Math.sqrt((a*a + b*b));*/
-
-    console.log(length);
-    var arrowHelper = new THREE.ArrowHelper( dir, origin, length, color, 0.2, 0.2 );
-    console.log(arrowHelper);
-
-    //var sc = 1 / length;
-    //arrowHelper.scale.set(sc, sc, sc);
-    arrowHelper.cone.matrixAutoUpdate = true;
-    arrowHelper.cone.scale.x = 0.01;
-    arrowHelper.cone.rotation.x = 0;
-    arrowHelper.cone.rotation.y = 0;
-    //arrowHelper.cone.position.set(x+ 0.5, 0.01, y+0.5);
-
-    //arrowHelper.cone.scale.set(0.1, 0.1, 0.1);
-
-    grid.add( arrowHelper );
-
+    // record goal 3d point
+    moveAvatar(selectedAvatar, new THREE.Vector3( x + 0.5, selectedAvatar.position.y, y + 0.5));
 }
 
 
 function selectAvatar(avatar) {
     selectedAvatar = avatar;
 }
+
+
+
+

@@ -1,5 +1,6 @@
 var THREE = window.THREE;
-var gridW = 17, gridH = 21, tileSize = 1;
+//var gridW = 17, gridH = 21, tileSize = 1;
+var gridW = 35, gridH = 43, tileSize = 1;
 var grid, selector;
 
 
@@ -19,13 +20,13 @@ function createScene() {
     loadGoal('bottom');
 
     // create lights
-    createHemiLight(grid, new THREE.Vector3(gridW, 40, gridH), 0x666666, 0xffffff, 0.6);
-    createSpotLight(grid, new THREE.Vector3(gridW * 1.5, 20, gridH * 1.5), 0xffffff, 1.5);
+    createHemiLight(grid, new THREE.Vector3(gridW, 60, gridH), 0x666666, 0xffffff, 0.6);
+    createSpotLight(grid, new THREE.Vector3(gridW * 1.5, 40, gridH * 1.5), 0xffffff, 1.5);
 
     // locate camera
     camera = new THREE.PerspectiveCamera(45, (SCREEN_WIDTH) / (SCREEN_HEIGHT), 0.1, 1000);
     camera.fov = 30;
-    camera.position.set(0, 40, 0);
+    camera.position.set(0, 60, 0);
     camera.lookAt(grid.position);
     camera.updateProjectionMatrix();
 }
@@ -39,7 +40,7 @@ function createSkyBox() {
     skyBox.name = 'skyBox';
     scene.add(skyBox);
 
-    scene.fog = new THREE.FogExp2( bgColor, 0.01 );
+    scene.fog = new THREE.FogExp2( bgColor, 0.005 );
 }
 
 
@@ -76,7 +77,7 @@ function createGridHelper(grid) {
     }
 
     // line material
-    var material = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2 });
+    var material = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 });
 
     // grid
     var gridHelper = new THREE.Line( geometry, material );

@@ -39,13 +39,21 @@ function update() {
     controls.update();
     stats.update();
 
-    selector.rotation.z += 0.03;
+    if (selectedAvatar) {
+        selector.position.x = selectedAvatar.position.x;
+        selector.position.z = selectedAvatar.position.z;
+        selector.rotation.z += 0.03;
+    }
+
+
 }
 
 function render() {
     update();
     requestAnimationFrame(render);
     renderer.render(scene, camera);
+
+    TWEEN.update();
 }
 
 

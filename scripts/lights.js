@@ -48,8 +48,8 @@ function createSpotLight(parent, pos, color, intensity) {
 
     spotLight.castShadow = true;
     spotLight.shadowCameraNear = 1;
-    spotLight.shadowCameraFar = 50;
-    spotLight.shadowCameraFov = 50;
+    spotLight.shadowCameraFar = 100;
+    spotLight.shadowCameraFov = 100;
 
     //spotLight.shadowCameraVisible = true;
 
