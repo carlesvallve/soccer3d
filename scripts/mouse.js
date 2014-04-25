@@ -16,13 +16,13 @@ function onMouseDown( e ) { mouseMoved = false; }
 function onMouseMove( e ) { mouseMoved = true; }
 
 function onMouseUp( e ) {
-    if (!grid || mouseMoved) { return; }
+    if (mouseMoved) { return; }
 
     mouseVector.x = 2 * (e.clientX / SCREEN_WIDTH) - 1;
     mouseVector.y = 1 - 2 * ( e.clientY / SCREEN_HEIGHT );
 
     var raycaster = projector.pickingRay( mouseVector.clone(), camera );
-    var intersects = raycaster.intersectObjects( grid.children );
+    var intersects = raycaster.intersectObjects( scene.children );
 
     for( var i = 0; i < intersects.length; i++ ) {
         var intersection = intersects[ i ];
@@ -30,7 +30,7 @@ function onMouseUp( e ) {
 
         // escape if not interactive objects
         if (!obj.name) { continue }
-        if (obj.name === 'gridHelper') { continue; }
+        if (obj.name === 'grid') { continue; }
 
         // we selected an avatar
         if (obj.name.split('-')[0] === 'avatar') {
@@ -58,7 +58,7 @@ function selectCell(point) {
     //console.log('selectCell(' + x + ',' + y +')');
 
     // check if the cell is ocuppied by an avatar and i so, select it
-    grid.traverse(function(e) {
+    scene.traverse(function(e) {
         if (e.name.split('-')[0] === 'avatar' ) {
             if (Math.floor(e.position.x) === x && Math.floor(e.position.z) === y) {
                 selectAvatar(e);

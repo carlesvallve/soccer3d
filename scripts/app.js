@@ -1,4 +1,3 @@
-
 var THREE = window.THREE;
 
 var Detector = window.Detector;
@@ -9,16 +8,16 @@ if (!Detector.webgl) {
 var SCREEN_WIDTH = window.innerWidth - 10;
 var SCREEN_HEIGHT = window.innerHeight - 10;
 
-var scene, camera, renderer, gui, controls, stats;
-var numberOfObjects;
+var renderer, controls, stats, gui;
 
 
 function initApp() {
     createScene();
 
-    createGui();
-    createStats();
     createControls();
+    createStats();
+    createGui();
+
     createRenderer();
 
     requestAnimationFrame(render);
@@ -35,75 +34,20 @@ function createRenderer() {
 }
 
 
-function update() {
-    if (controls) { controls.update(); }
-    stats.update();
-
-
-
+function render() {
     if (selectedAvatar) {
         selector.position.x = selectedAvatar.position.x;
         selector.position.z = selectedAvatar.position.z;
         selector.rotation.z += 0.03;
-
-        //camera.position.set(grid.position.x + selectedAvatar.position.x, 60, grid.position.z + selectedAvatar.position.z);
-        //camera.lookAt(new THREE.Vector3());
     }
 
-
-
+    controls.update();
+    stats.update();
     TWEEN.update();
-
-}
-
-function render() {
-    update();
-
-
     scene.simulate();
+
     renderer.render(scene, camera);
-
     requestAnimationFrame(render);
-}
-
-
-function createGui() {
-    gui = new dat.GUI();
-    //dat.GUI.toggleHide();
-    gui.close();
-
-    var initialNumberObObjects = grid.children.length;
-
-    gui.params = new function() {
-        this.rotationSpeed = 0;
-        this.bouncingSpeed = 0;
-        this.numberOfObjects = grid.children.length - initialNumberObObjects;
-
-        this.addCube = function() {
-            //createCube();
-            loadAvatar();
-            this.numberOfObjects = grid.children.length - initialNumberObObjects;
-        };
-
-        this.removeCube = function() {
-            deleteObject();
-            this.numberOfObjects = grid.children.length - initialNumberObObjects;
-        };
-
-        this.outputObjects = function() {
-            console.log(scene.children);
-        };
-    };
-
-    gui.add(gui.params, 'rotationSpeed', 0, 0.5);
-    gui.add(gui.params, 'bouncingSpeed', 0, 0.5);
-    gui.add(gui.params, 'addCube');
-    gui.add(gui.params, 'removeCube');
-    gui.add(gui.params, 'outputObjects');
-    gui.add(gui.params, 'numberOfObjects').listen();
-
-
-
 }
 
 
@@ -116,7 +60,7 @@ function createControls() {
     controls.noPan = false;
     controls.staticMoving = true;
     controls.dynamicDampingFactor = 0.3;
-    //controls.addEventListener( 'change', render );
+    //controls.addEventListener( 'change', function () { console.log('changing'); });
 }
 
 
@@ -127,5 +71,22 @@ function createStats() {
     stats.domElement.style.left = '0px';
     stats.domElement.style.top = '0px';
     document.body.appendChild(stats.domElement);
+}
+
+
+function createGui() {
+    gui = new dat.GUI();
+    gui.close();
+
+    gui.params = new function() {
+        //this.rotationSpeed = 0;
+
+        this.outputObjects = function() {
+            console.log(scene.children);
+        };
+    };
+
+    //gui.add(gui.params, 'rotationSpeed', 0, 0.5);
+    gui.add(gui.params, 'outputObjects');
 }
 

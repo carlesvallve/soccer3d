@@ -1,129 +1,80 @@
 var THREE = window.THREE;
-//var gridW = 17, gridH = 21, tileSize = 1;
+
 var gridW = 35, gridH = 44, tileSize = 1;
-var grid, selector, ball;
-var debugEnabled = true;
+var scene, camera, pitch, ball, selector;
 
 
 function createScene() {
     // create scene
     scene = new Physijs.Scene;
+    scene.add(new THREE.AxisHelper(1));
     scene.setGravity(new THREE.Vector3( 0, -30, 0 ));
-    // scene = new THREE.Scene();
 
+    // create camera
+    createCamera(scene);
+
+    // create lights
+    createHemiLight(scene, new THREE.Vector3(gridW, 60, gridH), 0x666666, 0xffffff, 0.6);
+    createSpotLight(scene, new THREE.Vector3(gridW * 1.5, 40, gridH * 1.5), 0xffffff, 1.5);
 
     // create skybox
     createSkyBox();
 
-    // create grid
-    createGrid();
+    // create pitch
+    pitch = {
+        cube: createCube(),
+        plane: createPlane(),
+        grid: createGrid()
+    };
+
+    // create selector
+    selector = createSelector(scene);
+
+    // create ball
+    loadBall(scene, function (mesh) { ball = mesh; });
+
+    // create teams
+    //team1 = createTeam(1, 'top', getRandomFormation(), [0xff0000, 0xffffff]);
+    //team2 = createTeam(2, 'bottom', getRandomFormation(), [0x000000, 0x777777]);
 
     // create goals
     //loadGoal('top');
     //loadGoal('bottom');
-
-    // create lights
-    createHemiLight(grid, new THREE.Vector3(gridW, 60, gridH), 0x666666, 0xffffff, 0.6);
-    createSpotLight(grid, new THREE.Vector3(gridW * 1.5, 40, gridH * 1.5), 0xffffff, 1.5);
-
-    // create camera
-    createCamera();
-
-    // debug
-    if (debugEnabled) {
-        scene.add(new THREE.AxisHelper(1));
-        grid.add(new THREE.AxisHelper(1));
-        //cameraTarget.add(new THREE.AxisHelper(1));
-    }
 }
 
 
 function createSkyBox() {
     var bgColor = 0x222222;
+    scene.fog = new THREE.FogExp2( bgColor, 0.005 );
+
     var geometry = new THREE.BoxGeometry( 100, 100, 100 );
     var material = new THREE.MeshBasicMaterial( { color: bgColor, side: THREE.BackSide } );
     var skyBox = new THREE.Mesh( geometry, material );
     skyBox.name = 'skyBox';
+    skyBox.position.set(gridW / 2, 0 , gridH / 2);
+
     scene.add(skyBox);
-
-    scene.fog = new THREE.FogExp2( bgColor, 0.005 );
+    return skyBox;
 }
 
 
-function createGrid() {
-    grid = new THREE.Object3D();
-    grid.name = 'grid';
-    grid.position.set(-gridW/2, 0, -gridH/2);
-
-
-    var cube = createCube(grid);
-    var plane = createPlane(grid);
-    createGridHelper(grid);
-
-    //grid.rotation.x += Math.PI / 10;
-    //plane.rotation.x += Math.PI / 10;
-    //cube.rotation.x += Math.PI / 11;
-
-    selector = createSelector();
-
-    loadBall(function (mesh) {
-        ball = mesh;
-
-        requestAnimationFrame(render);
-    });
-
-    team1 = createTeam(1, 'top', getRandomFormation(), [0xff0000, 0xffffff]);
-    team2 = createTeam(2, 'bottom', getRandomFormation(), [0x000000, 0x777777]);
-
-    scene.add(grid);
-}
-
-
-function createGridHelper(grid) {
-    var geometry = new THREE.Geometry();
-    var d = 0; // tileSize * 0.5;
-
-    // horizontal line vertices
-    for ( var y = 0; y <= gridH; y += 1 ) {
-        geometry.vertices.push(new THREE.Vector3(-d , 0, -d +y * tileSize));
-        geometry.vertices.push(new THREE.Vector3(-d + gridW * tileSize, 0, -d + y * tileSize));
-    }
-
-    // vertical line vertices
-    for ( var x = 0; x <= gridW; x += 1 ) {
-        geometry.vertices.push(new THREE.Vector3(-d + x * tileSize, 0, -d));
-        geometry.vertices.push(new THREE.Vector3(-d + x * tileSize, 0, -d + gridH * tileSize));
-    }
-
-    // line material
-    var material = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 });
-
-    // grid
-    var gridHelper = new THREE.Line( geometry, material );
-    gridHelper.name = 'gridHelper';
-    gridHelper.type = THREE.LinePieces;
-    gridHelper.position.set(0, 0.01, 0);
-
-    grid.add(gridHelper);
-}
-
-
-function createCube(grid) {
+function createCube() {
     var geometry = new THREE.BoxGeometry(gridW, 0.5, gridH);
     var material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x999900 }),
         .8, // high friction
         .4 // low restitution
     );
-    //var cube = new THREE.Mesh(geometry, material);
+
     var cube = new Physijs.BoxMesh(geometry, material, 0);
     cube.name = 'gridCube';
     cube.position.set(gridW/2, -0.26, gridH/2);
-    grid.add(cube);
 
+    scene.add(cube);
     return cube;
 }
 
-function createPlane(grid) {
+
+function createPlane() {
     // geometry
     var geometry = new THREE.PlaneGeometry(gridW, gridH, gridW, gridH);
 
@@ -146,13 +97,45 @@ function createPlane(grid) {
     plane.position.set(gridW/2, 0, gridH/2);
     plane.children[0].receiveShadow = true;
 
-    grid.add(plane);
-
+    scene.add(plane);
     return plane;
 }
 
 
-function createFaceMaterialPlane(grid) {
+function createGrid() {
+    var geometry = new THREE.Geometry();
+    var d = 0; // tileSize * 0.5;
+
+    // horizontal line vertices
+    for ( var y = 0; y <= gridH; y += 1 ) {
+        geometry.vertices.push(new THREE.Vector3(-d , 0, -d +y * tileSize));
+        geometry.vertices.push(new THREE.Vector3(-d + gridW * tileSize, 0, -d + y * tileSize));
+    }
+
+    // vertical line vertices
+    for ( var x = 0; x <= gridW; x += 1 ) {
+        geometry.vertices.push(new THREE.Vector3(-d + x * tileSize, 0, -d));
+        geometry.vertices.push(new THREE.Vector3(-d + x * tileSize, 0, -d + gridH * tileSize));
+    }
+
+    // line material
+    var material = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 });
+
+    // grid
+    var grid = new THREE.Line( geometry, material );
+    grid.name = 'gridHelper';
+    grid.type = THREE.LinePieces;
+    grid.position.set(0, 0.01, 0);
+
+    scene.add(grid);
+    return grid;
+}
+
+
+// ************************************************************************
+// ************************************************************************
+
+function createFaceMaterialPlane(parent) {
     // geometry
     var geometry = new THREE.PlaneGeometry( gridW, gridH, gridW, gridH ); //500, 500, 10, 10 );
 
@@ -168,7 +151,7 @@ function createFaceMaterialPlane(grid) {
     mesh.rotation.x = -0.5 * Math.PI;
     mesh.position.set(gridW/2, 0, gridH/2);
     mesh.receiveShadow = true;
-    grid.add( mesh );
+    parent.add( mesh );
 
     // paint cells
     for (var y = 0; y < gridH; y++) {
@@ -183,10 +166,7 @@ function createFaceMaterialPlane(grid) {
 }
 
 
-
-
-
-function loadGoal(field) {
+function loadGoal(parent, field) {
     // TODO: Gives an error after pulling latest Three.js
     return;
 
@@ -214,7 +194,7 @@ function loadGoal(field) {
         mesh.castShadow = true;
         mesh.receiveShadow = true;
 
-        grid.add( mesh );
+        parent.add( mesh );
 
     });
 
@@ -224,9 +204,4 @@ function loadGoal(field) {
     //});
 
 }
-
-
-
-
-
 
