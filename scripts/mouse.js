@@ -1,3 +1,5 @@
+var THREE = window.THREE;
+
 // Picking stuff
 
 var projector = new THREE.Projector();
@@ -57,7 +59,7 @@ function selectCell(point) {
 
     // check if the cell is ocuppied by an avatar and i so, select it
     grid.traverse(function(e) {
-        if (e instanceof THREE.Mesh && e.name.split('-')[0] === 'avatar' ) {
+        if (e.name.split('-')[0] === 'avatar' ) {
             if (Math.floor(e.position.x) === x && Math.floor(e.position.z) === y) {
                 selectAvatar(e);
                 return;
@@ -83,6 +85,27 @@ function selectCell(point) {
 
 function selectAvatar(avatar) {
     selectedAvatar = avatar;
+
+    var point = new THREE.Vector3(avatar.position.x, cameraTarget.position.y, avatar.position.z);
+    var dist = cameraTarget.position.distanceTo(point);
+
+    cameraTarget.tweens.move = new TWEEN.Tween(cameraTarget.position).to(point, 100 * dist)
+        .easing(TWEEN.Easing.Sinusoidal.Out)
+        .start()
+
+
+    point = new THREE.Vector3(avatar.position.x, ball.position.y, avatar.position.z);
+
+    //ball.geometry.applyMatrix( new THREE.Matrix4().makeRotationFromEuler( new THREE.Vector3( Math.PI / 2, Math.PI, 0 ) ) );
+    ball.lookAt(point);
+
+    dist = ball.position.distanceTo(point);
+
+    ball.tweens.move = new TWEEN.Tween(ball.position).to(point, 100 * dist)
+        .easing(TWEEN.Easing.Sinusoidal.Out)
+        .onUpdate(function () { ball.rotation.x += 0.1; })
+        .start()
+
 }
 
 

@@ -1,13 +1,16 @@
 var THREE = window.THREE;
 //var gridW = 17, gridH = 21, tileSize = 1;
-var gridW = 35, gridH = 43, tileSize = 1;
-var grid, selector;
+var gridW = 35, gridH = 44, tileSize = 1;
+var grid, selector, ball;
+var debugEnabled = true;
 
 
 function createScene() {
     // create scene
-    scene = new THREE.Scene();
-    scene.add(new THREE.AxisHelper(1));
+    scene = new Physijs.Scene;
+    scene.setGravity(new THREE.Vector3( 0, -30, 0 ));
+    // scene = new THREE.Scene();
+
 
     // create skybox
     createSkyBox();
@@ -16,19 +19,22 @@ function createScene() {
     createGrid();
 
     // create goals
-    loadGoal('top');
-    loadGoal('bottom');
+    //loadGoal('top');
+    //loadGoal('bottom');
 
     // create lights
     createHemiLight(grid, new THREE.Vector3(gridW, 60, gridH), 0x666666, 0xffffff, 0.6);
     createSpotLight(grid, new THREE.Vector3(gridW * 1.5, 40, gridH * 1.5), 0xffffff, 1.5);
 
-    // locate camera
-    camera = new THREE.PerspectiveCamera(45, (SCREEN_WIDTH) / (SCREEN_HEIGHT), 0.1, 1000);
-    camera.fov = 30;
-    camera.position.set(0, 60, 0);
-    camera.lookAt(grid.position);
-    camera.updateProjectionMatrix();
+    // create camera
+    createCamera();
+
+    // debug
+    if (debugEnabled) {
+        scene.add(new THREE.AxisHelper(1));
+        grid.add(new THREE.AxisHelper(1));
+        //cameraTarget.add(new THREE.AxisHelper(1));
+    }
 }
 
 
@@ -46,15 +52,28 @@ function createSkyBox() {
 
 function createGrid() {
     grid = new THREE.Object3D();
-    grid.add(new THREE.AxisHelper(1));
     grid.name = 'grid';
     grid.position.set(-gridW/2, 0, -gridH/2);
 
-    createCube(grid);
-    createPlane(grid);
+
+    var cube = createCube(grid);
+    var plane = createPlane(grid);
     createGridHelper(grid);
 
+    //grid.rotation.x += Math.PI / 10;
+    //plane.rotation.x += Math.PI / 10;
+    //cube.rotation.x += Math.PI / 11;
+
     selector = createSelector();
+
+    loadBall(function (mesh) {
+        ball = mesh;
+
+        requestAnimationFrame(render);
+    });
+
+    team1 = createTeam(1, 'top', getRandomFormation(), [0xff0000, 0xffffff]);
+    team2 = createTeam(2, 'bottom', getRandomFormation(), [0x000000, 0x777777]);
 
     scene.add(grid);
 }
@@ -88,13 +107,20 @@ function createGridHelper(grid) {
     grid.add(gridHelper);
 }
 
+
 function createCube(grid) {
     var geometry = new THREE.BoxGeometry(gridW, 0.5, gridH);
-    var material = new THREE.MeshLambertMaterial({color: 0x999900 });
-    var cube = new THREE.Mesh(geometry, material);
+    var material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x999900 }),
+        .8, // high friction
+        .4 // low restitution
+    );
+    //var cube = new THREE.Mesh(geometry, material);
+    var cube = new Physijs.BoxMesh(geometry, material, 0);
     cube.name = 'gridCube';
     cube.position.set(gridW/2, -0.26, gridH/2);
     grid.add(cube);
+
+    return cube;
 }
 
 function createPlane(grid) {
@@ -121,6 +147,8 @@ function createPlane(grid) {
     plane.children[0].receiveShadow = true;
 
     grid.add(plane);
+
+    return plane;
 }
 
 

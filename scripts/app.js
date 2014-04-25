@@ -21,7 +21,7 @@ function initApp() {
     createControls();
     createRenderer();
 
-    render();
+    requestAnimationFrame(render);
 }
 
 
@@ -36,29 +36,41 @@ function createRenderer() {
 
 
 function update() {
-    controls.update();
+    if (controls) { controls.update(); }
     stats.update();
+
+
 
     if (selectedAvatar) {
         selector.position.x = selectedAvatar.position.x;
         selector.position.z = selectedAvatar.position.z;
         selector.rotation.z += 0.03;
+
+        //camera.position.set(grid.position.x + selectedAvatar.position.x, 60, grid.position.z + selectedAvatar.position.z);
+        //camera.lookAt(new THREE.Vector3());
     }
 
+
+
+    TWEEN.update();
 
 }
 
 function render() {
     update();
-    requestAnimationFrame(render);
+
+
+    scene.simulate();
     renderer.render(scene, camera);
 
-    TWEEN.update();
+    requestAnimationFrame(render);
 }
 
 
 function createGui() {
     gui = new dat.GUI();
+    //dat.GUI.toggleHide();
+    gui.close();
 
     var initialNumberObObjects = grid.children.length;
 
@@ -89,6 +101,9 @@ function createGui() {
     gui.add(gui.params, 'removeCube');
     gui.add(gui.params, 'outputObjects');
     gui.add(gui.params, 'numberOfObjects').listen();
+
+
+
 }
 
 
