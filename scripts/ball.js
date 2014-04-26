@@ -1,20 +1,12 @@
-function loadBall(parent, cb) {
+function loadBallModel(parent, cb) {
     var loader = new THREE.JSONLoader();
     loader.load( 'assets/models/soccer-ball.js', function (geometry, materials) {
         var scale = 0.055;
 
         // create avatar mesh
-        //var mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
-
-        var mesh = new Physijs.SphereMesh( geometry, new THREE.MeshFaceMaterial( materials ), 0.8, { restitution: 0.4 });
+        var mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
         mesh.name = 'ball';
-
         mesh.scale.set(scale, scale, scale);
-        mesh._physijs.radius *= scale; // TODO: Seems like a bug in physijs to have to set this manually...
-        mesh.position.x = gridW / 2;
-        mesh.position.y = 10.16;
-        mesh.position.z = gridH / 2;
-        //mesh.rotation.y = Math.random() * Math.PI;
 
         mesh.castShadow = true;
         //avatar.receiveShadow = true;
@@ -22,9 +14,57 @@ function loadBall(parent, cb) {
         mesh.tweens = {};
         parent.add(mesh);
 
-        //mesh.add(new THREE.AxisHelper(6));
-
         // return callback
         if (cb) { cb(mesh); }
     });
+}
+
+
+function loadBall(parent, cb) {
+
+    var mesh = new Physijs.SphereMesh(
+        new THREE.IcosahedronGeometry( 0.175, 1 ),
+        Physijs.createMaterial(new THREE.MeshBasicMaterial(),
+            0.8, 1.0
+        ),
+        0.15
+    );
+
+    //mesh.visible = false;
+
+    mesh.name = 'ball';
+    mesh.position.x = gridW / 2;
+    mesh.position.y = 0.175;
+    mesh.position.z = gridH / 2;
+
+    //mesh.castShadow = true;
+    //mesh.recieveShadow = true;
+
+    mesh.tweens = {};
+    parent.add(mesh);
+
+    loadBallModel(mesh, function (model) {
+        mesh.model = model;
+    });
+
+
+    if (cb) { cb(mesh); }
+}
+
+
+function pushBall(point) {
+    ball.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+    //ball.setAngularVelocity(new THREE.Vector3(0, 0, 0));
+
+    // TODO: find a way to find the force vector depending on how we slide from what camera angle
+
+    var force = new THREE.Vector3(
+        (-point.x + ball.position.x) * gui.params.force,
+        (-point.y + ball.position.y) * gui.params.force,
+        (-point.z + ball.position.z) * gui.params.force
+    );
+
+    var offset = new THREE.Vector3(-point.x, -point.y, -point.z);
+
+    ball.applyCentralImpulse(force, offset);
 }

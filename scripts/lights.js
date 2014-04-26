@@ -23,7 +23,7 @@ function createDirectionalLight(parent, pos, color, intensity) {
     light.position = pos; //.set(0, 10, 0);
     light.target.position.set(0, 0, 0); // = pos; //.set(gridW * 0.5, 0, gridH * 0.5);
     light.castShadow = true;
-    light.shadowDarkness = 0.8;
+    light.shadowDarkness = 1.0;
     light.shadowCameraVisible = true; // only for debugging
     // these six values define the boundaries of the yellow box seen above
     light.shadowCameraNear = 2;
@@ -42,9 +42,9 @@ function createSpotLight(parent, pos, color, intensity) {
     var spotLight = new THREE.SpotLight(color);
     spotLight.intensity = intensity;
     spotLight.position = pos;
-    spotLight.target.position.set(0, 0, 0);
+    spotLight.target.position.set(gridW * 0.25, 0, gridH * 0.25);
 
-    spotLight.shadowDarkness = 0.8;
+    spotLight.shadowDarkness = 1.0;
 
     spotLight.castShadow = true;
     spotLight.shadowCameraNear = 1;

@@ -29,13 +29,13 @@ function loadAvatar(num, colors, cb) {
         var mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
         mesh.name = 'avatar-' + num ;//grid.children.length;
 
-        mesh.scale.set(size, size, size);
+        mesh.scale.set(size, size * 1.25, size);
 
         mesh.castShadow = true;
-        //avatar.receiveShadow = true;
+        //mesh.receiveShadow = true;
 
         mesh.tweens = {};
-        grid.add(mesh);
+        scene.add(mesh);
 
         // return callback
         if (cb) { cb(num, mesh); }
@@ -101,14 +101,14 @@ function moveAvatar(avatar, point) {
         .start()
 
     // move camera target to point
-    console.log('moveAvatar');
+    /*console.log('moveAvatar');
     if (cameraTarget.tweens.move) { cameraTarget.tweens.move.stop(); }
 
     cameraTarget.tweens.move = new TWEEN.Tween(cameraTarget.position)
         .to(new THREE.Vector3(point.x, cameraTarget.position.y, point.z), time * 1.0)
         .easing(TWEEN.Easing.Sinusoidal.InOut)
         .onComplete(function () { cameraTarget.tweens.move = null; })
-        .start()
+        .start()*/
 
 
 }

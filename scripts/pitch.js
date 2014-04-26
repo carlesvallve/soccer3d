@@ -1,30 +1,13 @@
 var THREE = window.THREE;
 
-var gridW = 35, gridH = 44, tileSize = 1;
-var scene, camera, pitch, ball, selector;
 
-
-function createScene() {
-    // create scene
-    scene = new Physijs.Scene;
-    scene.add(new THREE.AxisHelper(1));
-    scene.setGravity(new THREE.Vector3( 0, -30, 0 ));
-
-    // create camera
-    createCamera(scene);
-
-    // create lights
-    createHemiLight(scene, new THREE.Vector3(gridW, 60, gridH), 0x666666, 0xffffff, 0.6);
-    createSpotLight(scene, new THREE.Vector3(gridW * 1.5, 40, gridH * 1.5), 0xffffff, 1.5);
-
-    // create skybox
-    createSkyBox();
-
+function createPitch() {
     // create pitch
     pitch = {
         cube: createCube(),
         plane: createPlane(),
-        grid: createGrid()
+        grid: createGrid(),
+        walls: createWalls()
     };
 
     // create selector
@@ -34,8 +17,8 @@ function createScene() {
     loadBall(scene, function (mesh) { ball = mesh; });
 
     // create teams
-    //team1 = createTeam(1, 'top', getRandomFormation(), [0xff0000, 0xffffff]);
-    //team2 = createTeam(2, 'bottom', getRandomFormation(), [0x000000, 0x777777]);
+    team1 = createTeam(1, 'top', getRandomFormation(), [0xff0000, 0xffffff]);
+    team2 = createTeam(2, 'bottom', getRandomFormation(), [0x000000, 0x777777]);
 
     // create goals
     //loadGoal('top');
@@ -43,34 +26,17 @@ function createScene() {
 }
 
 
-function createSkyBox() {
-    var bgColor = 0x222222;
-    scene.fog = new THREE.FogExp2( bgColor, 0.005 );
-
-    var geometry = new THREE.BoxGeometry( 100, 100, 100 );
-    var material = new THREE.MeshBasicMaterial( { color: bgColor, side: THREE.BackSide } );
-    var skyBox = new THREE.Mesh( geometry, material );
-    skyBox.name = 'skyBox';
-    skyBox.position.set(gridW / 2, 0 , gridH / 2);
-
-    scene.add(skyBox);
-    return skyBox;
-}
-
 
 function createCube() {
     var geometry = new THREE.BoxGeometry(gridW, 0.5, gridH);
-    var material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x999900 }),
-        .8, // high friction
-        .4 // low restitution
-    );
+    var material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x996600 }), 1.0, 0.9);
 
-    var cube = new Physijs.BoxMesh(geometry, material, 0);
-    cube.name = 'gridCube';
-    cube.position.set(gridW/2, -0.26, gridH/2);
+    var mesh = new Physijs.BoxMesh(geometry, material, 0);
+    mesh.name = 'pitch';
+    mesh.position.set(gridW/2, -0.26, gridH/2);
 
-    scene.add(cube);
-    return cube;
+    scene.add(mesh);
+    return mesh;
 }
 
 
@@ -91,14 +57,14 @@ function createPlane() {
     ];
 
     // plane
-    var plane = THREE.SceneUtils.createMultiMaterialObject(geometry, materials);
-    plane.name = 'plane';
-    plane.rotation.x = -0.5 * Math.PI;
-    plane.position.set(gridW/2, 0, gridH/2);
-    plane.children[0].receiveShadow = true;
+    var mesh = THREE.SceneUtils.createMultiMaterialObject(geometry, materials);
+    mesh.name = 'plane';
+    mesh.rotation.x = -0.5 * Math.PI;
+    mesh.position.set(gridW/2, 0, gridH/2);
+    mesh.children[0].receiveShadow = true;
 
-    scene.add(plane);
-    return plane;
+    scene.add(mesh);
+    return mesh;
 }
 
 
@@ -122,13 +88,55 @@ function createGrid() {
     var material = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 });
 
     // grid
-    var grid = new THREE.Line( geometry, material );
-    grid.name = 'gridHelper';
-    grid.type = THREE.LinePieces;
-    grid.position.set(0, 0.01, 0);
+    var mesh = new THREE.Line( geometry, material );
+    mesh.name = 'grid';
+    mesh.type = THREE.LinePieces;
+    mesh.position.set(0, 0.01, 0);
 
-    scene.add(grid);
-    return grid;
+    scene.add(mesh);
+    return mesh;
+}
+
+
+function createWalls() {
+    // north
+    var mesh_n = new Physijs.BoxMesh(
+        new THREE.BoxGeometry(gridW, 1.5, 0.1),
+        Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x996600 }), 0.8, 1.0),
+        0
+    );
+    mesh_n.position.set(gridW/2, 0.25, 0);
+    scene.add(mesh_n);
+
+    // south
+    var mesh_s = new Physijs.BoxMesh(
+        new THREE.BoxGeometry(gridW, 1.5, 0.1),
+        Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x996600 }), 0.8, 1.0),
+        0
+    );
+    mesh_s.position.set(gridW/2, 0.25, gridH);
+    scene.add(mesh_s);
+
+    // east
+    var mesh_e = new Physijs.BoxMesh(
+        new THREE.BoxGeometry(0.1, 1.5, gridH),
+        Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x996600 }), 0.8, 1.0),
+        0
+    );
+    mesh_e.position.set(0, 0.25, gridH/2);
+    scene.add(mesh_e);
+
+    // west
+    var mesh_w = new Physijs.BoxMesh(
+        new THREE.BoxGeometry(0.1, 1.5, gridH),
+        Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x996600 }), 0.8, 1.0),
+        0
+    );
+    mesh_w.position.set(gridW, 0.25, gridH/2);
+    scene.add(mesh_w);
+
+    // return walls object
+    return { n: mesh_n, s: mesh_s, e: mesh_e, w: mesh_w }
 }
 
 

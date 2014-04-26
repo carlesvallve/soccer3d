@@ -5,14 +5,20 @@ if (!Detector.webgl) {
     Detector.addGetWebGLMessage();
 }
 
+Physijs.scripts.worker = '/soccer3d/lib/physijs/physijs_worker.js';
+Physijs.scripts.ammo = '/soccer3d/lib/physijs/ammo.js';
+
 var SCREEN_WIDTH = window.innerWidth - 10;
 var SCREEN_HEIGHT = window.innerHeight - 10;
 
 var renderer, controls, stats, gui;
+var scene, camera, pitch, ball, selector;
+var gridW = 35, gridH = 44, tileSize = 1;
 
 
 function initApp() {
     createScene();
+    createPitch();
 
     createControls();
     createStats();
@@ -21,6 +27,24 @@ function initApp() {
     createRenderer();
 
     requestAnimationFrame(render);
+}
+
+
+function createScene() {
+    // create scene
+    scene = new Physijs.Scene(); // { fixedTimeStep: 1 / 120 }
+    scene.add(new THREE.AxisHelper(1));
+    scene.setGravity(new THREE.Vector3( 0, -12, 0 ));
+
+    // create camera
+    createCamera(scene);
+
+    // create lights
+    createHemiLight(scene, new THREE.Vector3(gridW / 2, 60, gridH / 2), 0x666666, 0xffffff, 0.5);
+    createSpotLight(scene, new THREE.Vector3(gridW * 1.25, 40, gridH * 1.25), 0xffffff, 1.6);
+
+    // create skybox
+    createSkyBox();
 }
 
 
@@ -41,13 +65,20 @@ function render() {
         selector.rotation.z += 0.03;
     }
 
+    // TODO: Friction should take care of this (?)
+    ball.setAngularVelocity(ball.getAngularVelocity().multiplyScalar(0.9));
+
+    cameraTarget.position.x = ball.position.x;
+    cameraTarget.position.z = ball.position.z;
+
     controls.update();
     stats.update();
     TWEEN.update();
-    scene.simulate();
 
     renderer.render(scene, camera);
     requestAnimationFrame(render);
+
+    scene.simulate(); //(undefined, 2); // { timeStep: timeStep, maxSubSteps: maxSubSteps }
 }
 
 
@@ -79,14 +110,14 @@ function createGui() {
     gui.close();
 
     gui.params = new function() {
-        //this.rotationSpeed = 0;
+        this.force = 16.0;
 
         this.outputObjects = function() {
             console.log(scene.children);
         };
     };
 
-    //gui.add(gui.params, 'rotationSpeed', 0, 0.5);
     gui.add(gui.params, 'outputObjects');
+    gui.add(gui.params, 'force', 0.0, 32.0);
 }
 
