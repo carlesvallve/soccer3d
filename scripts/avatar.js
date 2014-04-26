@@ -3,7 +3,46 @@ var THREE = window.THREE;
 var selectedAvatar;
 
 
-function loadAvatar(num, colors, cb) {
+function createAvatar(num, colors, x, z, cb) {
+    /*var mesh = new Physijs.SphereMesh(
+        new THREE.IcosahedronGeometry( 0.3, 1 ),
+        Physijs.createMaterial(new THREE.MeshBasicMaterial({ color: colors[0], wireframe: true })
+            //,0.8, 1.0
+        ),
+        1
+    );*/
+
+    // create hidden physics capsule mesh
+    var mesh = new Physijs.CapsuleMesh(
+        //CylinderGeometry(radiusTop, radiusBottom, height, radiusSegments, heightSegments, openEnded)
+        new THREE.CylinderGeometry(0.3, 0.3, 0.8), //, 8, 1, false),
+        Physijs.createMaterial(new THREE.MeshBasicMaterial({ color: colors[0], wireframe: true }),
+            0.8, 0.5
+        ),
+        0
+    );
+
+    mesh.geometry.dynamic = false;
+
+    mesh.name = 'avatar-' + num;
+    mesh.position.x = 0.5 + x;
+    mesh.position.y = 0.4; //-0.02;
+    mesh.position.z = 0.5 + z;
+
+    mesh.tweens = {};
+    scene.add(mesh);
+
+    // load the ball model
+    loadAvatarModel(mesh, num, colors, function (model) {
+        mesh.model = model;
+        //mesh.visible = false;
+    });
+
+    return mesh;
+}
+
+
+function loadAvatarModel(parent, num, colors, cb) {
     var loader = new THREE.JSONLoader();
     loader.load( 'assets/models/android-animations.json', function (geometry, materials) {
         var size = 0.065; // + Math.random() * 0.02;
@@ -27,18 +66,19 @@ function loadAvatar(num, colors, cb) {
 
         // create avatar mesh
         var mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
-        mesh.name = 'avatar-' + num ;//grid.children.length;
+        mesh.name = 'avatarModel-' + num;
 
         mesh.scale.set(size, size * 1.25, size);
+        mesh.position.y = - 0.5;
 
         mesh.castShadow = true;
         //mesh.receiveShadow = true;
 
         mesh.tweens = {};
-        scene.add(mesh);
+        parent.add(mesh);
 
         // return callback
-        if (cb) { cb(num, mesh); }
+        if (cb) { cb(mesh); }
     });
 }
 
@@ -53,30 +93,6 @@ function animate(skinnedMesh) {
     THREE.AnimationHandler.add(skinnedMesh.geometry.animation);
     var animation = new THREE.Animation(skinnedMesh, "morphTargets", THREE.AnimationHandler.CATMULLROM);
     animation.play();
-}
-
-
-function createSelector(parent) {
-    var geometry = new THREE.PlaneGeometry(2.5, 2.5, 1, 1);
-
-    var material = new THREE.MeshBasicMaterial({
-        color: 0xffff00,
-        map: new THREE.ImageUtils.loadTexture( 'assets/textures/particles/particle4u.png'),
-        transparent: true,
-        blending: THREE.AdditiveBlending, //THREE.SubstractiveBlending,
-        opacity: 0.75,
-        depthWrite: false
-        //depthTest: false
-    });
-
-    var selector = new THREE.Mesh(geometry, material);
-    selector.name = 'selector';
-    selector.rotation.x = -0.5 * Math.PI;
-    selector.position.set(gridW/2, 0.001, gridH/2);
-
-    parent.add(selector);
-
-    return selector;
 }
 
 
@@ -101,15 +117,12 @@ function moveAvatar(avatar, point) {
         .start()
 
     // move camera target to point
-    /*console.log('moveAvatar');
     if (cameraTarget.tweens.move) { cameraTarget.tweens.move.stop(); }
 
     cameraTarget.tweens.move = new TWEEN.Tween(cameraTarget.position)
-        .to(new THREE.Vector3(point.x, cameraTarget.position.y, point.z), time * 1.0)
+        .to(new THREE.Vector3(point.x, cameraTarget.position.y, point.z), time)
         .easing(TWEEN.Easing.Sinusoidal.InOut)
         .onComplete(function () { cameraTarget.tweens.move = null; })
-        .start()*/
-
-
+        .start()
 }
 

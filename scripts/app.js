@@ -65,20 +65,26 @@ function render() {
         selector.rotation.z += 0.03;
     }
 
+    // set all avatars to 'dirty' physics so we can move them freely
+    liberateAvatarsFromPhysics(team1);
+    liberateAvatarsFromPhysics(team2);
+
     // TODO: Friction should take care of this (?)
     ball.setAngularVelocity(ball.getAngularVelocity().multiplyScalar(0.9));
 
-    cameraTarget.position.x = ball.position.x;
-    cameraTarget.position.z = ball.position.z;
+    //cameraTarget.position.x = ball.position.x;
+    //cameraTarget.position.z = ball.position.z;
 
     controls.update();
     stats.update();
     TWEEN.update();
 
+    scene.simulate(undefined, 1); //(undefined, 1); // { timeStep: timeStep, maxSubSteps: maxSubSteps }
+
     renderer.render(scene, camera);
     requestAnimationFrame(render);
 
-    scene.simulate(); //(undefined, 2); // { timeStep: timeStep, maxSubSteps: maxSubSteps }
+
 }
 
 

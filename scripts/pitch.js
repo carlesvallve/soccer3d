@@ -11,10 +11,11 @@ function createPitch() {
     };
 
     // create selector
-    selector = createSelector(scene);
+    selector = createSelector();
 
     // create ball
-    loadBall(scene, function (mesh) { ball = mesh; });
+    ball = createBall();
+    //loadBall(scene, function (mesh) { ball = mesh; });
 
     // create teams
     team1 = createTeam(1, 'top', getRandomFormation(), [0xff0000, 0xffffff]);
@@ -32,6 +33,8 @@ function createCube() {
     var material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x996600 }), 1.0, 0.9);
 
     var mesh = new Physijs.BoxMesh(geometry, material, 0);
+    mesh.geometry.dynamic = false;
+
     mesh.name = 'pitch';
     mesh.position.set(gridW/2, -0.26, gridH/2);
 
@@ -137,6 +140,30 @@ function createWalls() {
 
     // return walls object
     return { n: mesh_n, s: mesh_s, e: mesh_e, w: mesh_w }
+}
+
+
+function createSelector() {
+    var geometry = new THREE.PlaneGeometry(2.5, 2.5, 1, 1);
+
+    var material = new THREE.MeshBasicMaterial({
+        color: 0xffff00,
+        map: new THREE.ImageUtils.loadTexture( 'assets/textures/particles/particle4u.png'),
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        opacity: 0.75,
+        depthWrite: false
+        //depthTest: false
+    });
+
+    var selector = new THREE.Mesh(geometry, material);
+    selector.name = 'selector';
+    selector.rotation.x = -0.5 * Math.PI;
+    selector.position.set(gridW/2, 0.001, gridH/2);
+
+    scene.add(selector);
+
+    return selector;
 }
 
 

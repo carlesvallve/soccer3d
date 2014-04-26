@@ -1,3 +1,36 @@
+
+
+
+function createBall(cb) {
+    // create hidden physics mesh
+    var mesh = new Physijs.SphereMesh(
+        new THREE.IcosahedronGeometry( 0.175, 1 ),
+        Physijs.createMaterial(new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true }),
+            0.8, 1.0
+        ),
+        0.15
+    );
+
+    mesh.geometry.dynamic = false;
+
+    mesh.name = 'ball';
+    mesh.position.x = gridW / 2;
+    mesh.position.y = 0.175;
+    mesh.position.z = gridH / 2;
+
+    mesh.tweens = {};
+    scene.add(mesh);
+
+    // load the ball model
+    loadBallModel(mesh, function (model) {
+        mesh.model = model;
+        mesh.visible = false;
+    });
+
+    return mesh;
+}
+
+
 function loadBallModel(parent, cb) {
     var loader = new THREE.JSONLoader();
     loader.load( 'assets/models/soccer-ball.js', function (geometry, materials) {
@@ -17,38 +50,6 @@ function loadBallModel(parent, cb) {
         // return callback
         if (cb) { cb(mesh); }
     });
-}
-
-
-function loadBall(parent, cb) {
-
-    var mesh = new Physijs.SphereMesh(
-        new THREE.IcosahedronGeometry( 0.175, 1 ),
-        Physijs.createMaterial(new THREE.MeshBasicMaterial(),
-            0.8, 1.0
-        ),
-        0.15
-    );
-
-    //mesh.visible = false;
-
-    mesh.name = 'ball';
-    mesh.position.x = gridW / 2;
-    mesh.position.y = 0.175;
-    mesh.position.z = gridH / 2;
-
-    //mesh.castShadow = true;
-    //mesh.recieveShadow = true;
-
-    mesh.tweens = {};
-    parent.add(mesh);
-
-    loadBallModel(mesh, function (model) {
-        mesh.model = model;
-    });
-
-
-    if (cb) { cb(mesh); }
 }
 
 

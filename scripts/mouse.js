@@ -74,9 +74,13 @@ function selectCell(point, avatar) {
     } else {
         // check if the cell is ocuppied by an avatar and i so, select it
         scene.traverse(function(e) {
-            if (e.name.split('-')[0] === 'avatar' ) {
-                if (Math.floor(e.position.x) === x && Math.floor(e.position.z) === y) {
+            if (Math.floor(e.position.x) === x && Math.floor(e.position.z) === y) {
+                if (e.name.split('-')[0] === 'avatar' ) {
                     selectAvatar(e);
+                    return;
+                }
+                if (e.name.split('-')[0] === 'avatarModel' ) {
+                    selectAvatar(e.parent);
                     return;
                 }
             }
@@ -96,12 +100,12 @@ function selectAvatar(avatar) {
 
     // move camera to avatar
 
-    /*var point = new THREE.Vector3(avatar.position.x, cameraTarget.position.y, avatar.position.z);
+    var point = new THREE.Vector3(avatar.position.x, cameraTarget.position.y, avatar.position.z);
     var dist = cameraTarget.position.distanceTo(point);
 
-    cameraTarget.tweens.move = new TWEEN.Tween(cameraTarget.position).to(point, 100 * dist)
+    cameraTarget.tweens.move = new TWEEN.Tween(cameraTarget.position).to(point, 25 * dist)
         .easing(TWEEN.Easing.Sinusoidal.Out)
-        .start()*/
+        .start()
 
 
     // move ball to avatar
