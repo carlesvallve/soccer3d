@@ -4,7 +4,7 @@ function createCamera(parent) {
     // create camera target
     cameraTarget = new THREE.Object3D();
     cameraTarget.name = 'cameraTarget';
-    cameraTarget.position.set(gridW / 2, 0, gridH / 2);
+    cameraTarget.position.set(gridW / 2, 1, gridH / 2);
     cameraTarget.tweens = {};
     parent.add(cameraTarget);
 

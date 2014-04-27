@@ -61,19 +61,24 @@ function createRenderer() {
 
 
 function render() {
+    // update ball
+    // TODO: Friction should take care of this (?)
+    ball.setAngularVelocity(ball.getAngularVelocity().multiplyScalar(0.9));
+    //checkForBallLimits();
+
+    // update avatars
+    // set all avatars to 'dirty' physics so we can move them freely
+    liberateAvatarsFromPhysics(team1);
+    liberateAvatarsFromPhysics(team2);
+
+    // update selected avatar
     if (selectedAvatar) {
         selector.position.x = selectedAvatar.position.x;
         selector.position.z = selectedAvatar.position.z;
         selector.rotation.z += 0.03;
     }
 
-    // set all avatars to 'dirty' physics so we can move them freely
-    liberateAvatarsFromPhysics(team1);
-    liberateAvatarsFromPhysics(team2);
-
-    // TODO: Friction should take care of this (?)
-    ball.setAngularVelocity(ball.getAngularVelocity().multiplyScalar(0.9));
-
+    // update camera
     //cameraTarget.position.x = ball.position.x;
     //cameraTarget.position.z = ball.position.z;
 
@@ -81,7 +86,7 @@ function render() {
     stats.update();
     TWEEN.update();
 
-    scene.simulate(undefined, 1); //(undefined, 1); // { timeStep: timeStep, maxSubSteps: maxSubSteps }
+    scene.simulate(undefined, 1); // { timeStep: timeStep, maxSubSteps: maxSubSteps }
 
     renderer.render(scene, camera);
     requestAnimationFrame(render);
@@ -92,13 +97,17 @@ function render() {
 
 function createControls() {
     controls = new THREE.OrbitControls(camera);
-    controls.rotateSpeed = 1.0;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 0.8;
-    controls.noZoom = false;
-    controls.noPan = false;
-    controls.staticMoving = true;
-    controls.dynamicDampingFactor = 0.3;
+
+    controls.rotateSpeed = 1.5;
+    controls.zoomSpeed = 1.5;
+    controls.panSpeed = 1.5;
+
+    controls.minDistance = 3;
+    controls.maxDistance = 60;
+
+    controls.minPolarAngle = 0; // radians
+    controls.maxPolarAngle = Math.PI / 2; // radians
+
     //controls.addEventListener( 'change', function () { console.log('changing'); });
 }
 
@@ -118,7 +127,7 @@ function createGui() {
     gui.close();
 
     gui.params = new function() {
-        this.force = 60.0;
+        this.force = 50.0;
 
         this.outputObjects = function() {
             console.log(scene.children);
@@ -126,6 +135,6 @@ function createGui() {
     };
 
     gui.add(gui.params, 'outputObjects');
-    gui.add(gui.params, 'force', 0.0, 200.0);
+    gui.add(gui.params, 'force', 0.0, 100.0);
 }
 
