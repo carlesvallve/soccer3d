@@ -138,6 +138,10 @@ function moveAvatarTo(avatar, point, speed) {
 function rotateAvatarTo(avatar, point, speed) {
     // TODO: Implement smarter mathematical way to tween rotations, maybe using Quaternions (?)
 
+    // TODO: One thing we can try is to create a target dummy for each avatar,
+    // TODO: then tween the target position and make the avatar lookAt the target onUpdate.
+    // TODO: target position should be always infront of the avatar final point
+
     var oldAngle = avatar.rotation.clone();
     avatar.lookAt(point);
     var newAngle = avatar.rotation.clone();
