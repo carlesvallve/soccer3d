@@ -109,22 +109,43 @@ function loadAvatarModel(parent, num, colors, cb) {
 function selectAvatar(avatar) {
     selectedAvatar = avatar;
 
-    moveCameraTo(avatar.position, 25);
+    moveCameraTo(avatar.position, 0, 25);
 }
 
 
 /**
- * moveAvatar tweens avatar and camera to given point
+ * moveAvatarTo tweens avatar and camera to given point
  * @param avatar
  * @param point
+ @param speed
  */
 function moveAvatarTo(avatar, point, speed) {
     // escape if position hasn't changed
     if (point.x === avatar.position.x && point.z === avatar.position.z) { return; }
 
-    moveObjectTo(avatar, point, speed, true);
-    avatar.lookAt(point);
+    rotateAvatarTo(avatar, point, 100);
+    moveObjectTo(avatar, point, 0, speed, true);
+    moveCameraTo(point, 0, speed);
+}
 
-    moveCameraTo(point, speed);
+
+/**
+ * rotateAvatarTo tweens avatar rotation to face given point
+ * @param avatar
+ * @param point
+ @param speed
+ */
+function rotateAvatarTo(avatar, point, speed) {
+    // TODO: Implement smarter mathematical way to tween rotations, maybe using Quaternions (?)
+
+    var oldAngle = avatar.rotation.clone();
+    avatar.lookAt(point);
+    var newAngle = avatar.rotation.clone();
+
+    //avatar.rotation.x = oldAngle.x;
+    avatar.rotation.y = oldAngle.y;
+    //avatar.rotation.z = oldAngle.z;
+
+    rotateObjectTo(avatar, newAngle, 0, speed, true);
 }
 

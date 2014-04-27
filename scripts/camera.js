@@ -20,9 +20,9 @@ function createCamera(parent) {
 }
 
 
-function moveCameraTo(point, speed) {
+function moveCameraTo(point, delay, speed) {
     point = new THREE.Vector3(point.x, cameraTarget.y, point.z);
-    moveObjectTo(cameraTarget, point, speed, false);
+    moveObjectTo(cameraTarget, point, delay, speed, false);
 }
 
 
