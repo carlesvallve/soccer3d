@@ -1,5 +1,5 @@
-
-
+var THREE = window.THREE;
+var Physijs = window.Physijs;
 
 function createBall() {
     // create hidden physics mesh
@@ -68,4 +68,23 @@ function pushBall(point) {
     var offset = new THREE.Vector3(-point.x, -point.y, -point.z);
 
     ball.applyImpulse(force, offset);
+}
+
+
+function moveBallTo(point, speed) {
+
+}
+
+
+function checkForBallLimits() {
+    /*var center = new THREE.Vector3(gridW/ 2, 0.175, gridH / 2);
+    ball.__dirtyRotation = true;
+    ball.__dirtyPosition = true;
+
+
+
+    moveBallTo(center, 0);
+    moveCameraTo(center, 25);
+
+    selectedAvatar = null;*/
 }

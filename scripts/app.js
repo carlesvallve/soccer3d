@@ -1,4 +1,5 @@
 var THREE = window.THREE;
+var Physijs = window.Physijs;
 
 var Detector = window.Detector;
 if (!Detector.webgl) {
@@ -61,15 +62,19 @@ function createRenderer() {
 
 
 function render() {
+    controls.update();
+    stats.update();
+    TWEEN.update();
+
     // update ball
     // TODO: Friction should take care of this (?)
     ball.setAngularVelocity(ball.getAngularVelocity().multiplyScalar(0.9));
-    //checkForBallLimits();
+    checkForBallLimits();
 
     // update avatars
     // set all avatars to 'dirty' physics so we can move them freely
-    liberateAvatarsFromPhysics(team1);
-    liberateAvatarsFromPhysics(team2);
+    //liberateAvatarsFromPhysics(team1);
+    //liberateAvatarsFromPhysics(team2);
 
     // update selected avatar
     if (selectedAvatar) {
@@ -82,9 +87,6 @@ function render() {
     //cameraTarget.position.x = ball.position.x;
     //cameraTarget.position.z = ball.position.z;
 
-    controls.update();
-    stats.update();
-    TWEEN.update();
 
     scene.simulate(undefined, 1); // { timeStep: timeStep, maxSubSteps: maxSubSteps }
 
@@ -102,7 +104,7 @@ function createControls() {
     controls.zoomSpeed = 1.5;
     controls.panSpeed = 1.5;
 
-    controls.minDistance = 3;
+    controls.minDistance = 4;
     controls.maxDistance = 60;
 
     controls.minPolarAngle = 0; // radians

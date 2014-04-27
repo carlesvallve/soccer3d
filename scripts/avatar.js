@@ -1,4 +1,5 @@
 var THREE = window.THREE;
+var Physijs = window.Physijs;
 
 var selectedAvatar;
 
@@ -11,18 +12,9 @@ var selectedAvatar;
  * @returns {CapsuleMesh}
  */
 function createAvatar(num, colors, x, z) {
-    /*var mesh = new Physijs.SphereMesh(
-        new THREE.IcosahedronGeometry( 0.3, 1 ),
-        Physijs.createMaterial(new THREE.MeshBasicMaterial({ color: colors[0], wireframe: true })
-            //,0.8, 1.0
-        ),
-        1
-    );*/
-
     // create hidden physics capsule mesh
     var mesh = new Physijs.CapsuleMesh(
-        //CylinderGeometry(radiusTop, radiusBottom, height, radiusSegments, heightSegments, openEnded)
-        new THREE.CylinderGeometry(0.3, 0.3, 0.8), //, 8, 1, false),
+        new THREE.CylinderGeometry(0.3, 0.3, 0.8), // (radiusTop, radiusBottom, height, radiusSegments, heightSegments, openEnded)
         Physijs.createMaterial(new THREE.MeshBasicMaterial({ color: colors[0], wireframe: true }),
             0.8, 0.5
         ),
@@ -42,7 +34,7 @@ function createAvatar(num, colors, x, z) {
     // load the ball model
     loadAvatarModel(mesh, num, colors, function (model) {
         mesh.model = model;
-        //mesh.visible = false;
+        mesh.visible = false;
     });
 
     return mesh;
@@ -112,12 +104,12 @@ function loadAvatarModel(parent, num, colors, cb) {
 
 /**
  * selectAvatar records given avatar object and tweens camera to it
- * @param avatar
+ * @param avatar)
  */
 function selectAvatar(avatar) {
     selectedAvatar = avatar;
 
-    moveCameraTo(avatar.position);
+    moveCameraTo(avatar.position, 25);
 }
 
 
@@ -126,33 +118,13 @@ function selectAvatar(avatar) {
  * @param avatar
  * @param point
  */
-function moveAvatar(avatar, point) {
+function moveAvatarTo(avatar, point, speed) {
     // escape if position hasn't changed
     if (point.x === avatar.position.x && point.z === avatar.position.z) { return; }
 
-    // look at point
+    moveObjectTo(avatar, point, speed, true);
     avatar.lookAt(point);
 
-    // get time to point
-    var dist = avatar.position.distanceTo(point);
-    var time = 100 * dist;
-
-    // move avatar to point
-    if (avatar.tweens.move) { avatar.tweens.move.stop(); }
-
-    avatar.tweens.move = new TWEEN.Tween(avatar.position)
-        .to(point, time)
-        .easing(TWEEN.Easing.Sinusoidal.InOut)
-        .onComplete(function () { avatar.tweens.move = null; })
-        .start();
-
-    // move camera target to point
-    if (cameraTarget.tweens.move) { cameraTarget.tweens.move.stop(); }
-
-    cameraTarget.tweens.move = new TWEEN.Tween(cameraTarget.position)
-        .to(new THREE.Vector3(point.x, cameraTarget.position.y, point.z), time)
-        .easing(TWEEN.Easing.Sinusoidal.InOut)
-        .onComplete(function () { cameraTarget.tweens.move = null; })
-        .start();
+    moveCameraTo(point, speed);
 }
 

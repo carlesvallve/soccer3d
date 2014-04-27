@@ -3,7 +3,6 @@ var THREE = window.THREE;
 /*
 TODO: We want to make finger swipes and translate them to a vector over the field
 TODO: This vector must be in relation to the position/direction of the camera
-
 when we click, we can figure out a point on the field,
 so maybe we should cast a ray every onmousemove and get an array of points
  */
@@ -20,15 +19,12 @@ window.document.addEventListener( 'mousedown', onMouseDown, false );
 
 
 function onMouseDown( e ) {
-    //if (mouseMoved) { return; }
-
     event.preventDefault();
 
     // mouse left button
 
     if ( e.button === 0 ) {
-        console.log('mouseDown', e.button);
-        scene.updateMatrixWorld();
+        //scene.updateMatrixWorld();
 
         mouseVector.x = 2 * (e.clientX / SCREEN_WIDTH) - 1;
         mouseVector.y = 1 - 2 * ( e.clientY / SCREEN_HEIGHT );
@@ -48,7 +44,6 @@ function onMouseDown( e ) {
 
             // we selected the ball
             if (obj.name === 'ball') {
-                //console.log(intersection.face, intersection.point.x, intersection.point.y, intersection.point.z);
                 pushBall(intersection.point);
                 return;
             }
@@ -80,9 +75,8 @@ function selectCell(point, avatar) {
     if (point.y < -0.01) { return; }
 
     // get cell coords
-    var x = Math.floor(point.x); //  + gridW / 2
-    var y = Math.floor(point.z); //  + gridH / 2
-
+    var x = Math.floor(point.x);
+    var y = Math.floor(point.z);
     //console.log('selectCell(' + x + ',' + y +')');
 
     // check for avatar selection
@@ -108,28 +102,12 @@ function selectCell(point, avatar) {
     if (!selectedAvatar) { return; }
 
     // record goal 3d point
-    moveAvatar(selectedAvatar, new THREE.Vector3( x + 0.5, selectedAvatar.position.y, y + 0.5));
+    moveAvatarTo(selectedAvatar, new THREE.Vector3( x + 0.5, selectedAvatar.position.y, y + 0.5), 100);
 }
 
 
 // ************************************************************************
 // ************************************************************************
-
-function tweenBallToAvatar() {
-    // move ball to avatar
-
-    /*point = new THREE.Vector3(avatar.position.x, ball.position.y, avatar.position.z);
-
-     //ball.geometry.applyMatrix( new THREE.Matrix4().makeRotationFromEuler( new THREE.Vector3( Math.PI / 2, Math.PI, 0 ) ) );
-     ball.lookAt(point);
-
-     dist = ball.position.distanceTo(point);
-
-     ball.tweens.move = new TWEEN.Tween(ball.position).to(point, 100 * dist)
-     .easing(TWEEN.Easing.Sinusoidal.Out)
-     .onUpdate(function () { ball.rotation.x += 0.1; })
-     .start()*/
-}
 
 
 function createArrowHelper() {

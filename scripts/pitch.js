@@ -1,5 +1,5 @@
 var THREE = window.THREE;
-
+var Physijs = window.Physijs;
 
 function createPitch() {
     // create pitch
@@ -30,7 +30,7 @@ function createPitch() {
 
 function createCube() {
     var geometry = new THREE.BoxGeometry(gridW, 0.5, gridH);
-    var material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x996600 }), 1.0, 0.9);
+    var material = Physijs.createMaterial(new THREE.MeshLambertMaterial({ color: 0x996600 }), 1.0, 0.8);
 
     var mesh = new Physijs.BoxMesh(geometry, material, 0);
     mesh.geometry.dynamic = false;

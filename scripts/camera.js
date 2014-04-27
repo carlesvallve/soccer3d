@@ -20,15 +20,9 @@ function createCamera(parent) {
 }
 
 
-function moveCameraTo(pos) {
-    // move camera to given position
-
-    var point = new THREE.Vector3(pos.x, cameraTarget.position.y, pos.z);
-    var dist = cameraTarget.position.distanceTo(point);
-
-    cameraTarget.tweens.move = new TWEEN.Tween(cameraTarget.position).to(point, 25 * dist)
-        .easing(TWEEN.Easing.Sinusoidal.Out)
-        .start();
+function moveCameraTo(point, speed) {
+    point = new THREE.Vector3(point.x, cameraTarget.y, point.z);
+    moveObjectTo(cameraTarget, point, speed, false);
 }
 
 
