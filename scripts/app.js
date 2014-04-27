@@ -45,6 +45,8 @@ function createScene() {
 
     // create skybox
     createSkyBox();
+
+    //initMouse();
 }
 
 
@@ -116,7 +118,7 @@ function createGui() {
     gui.close();
 
     gui.params = new function() {
-        this.force = 16.0;
+        this.force = 60.0;
 
         this.outputObjects = function() {
             console.log(scene.children);
@@ -124,6 +126,6 @@ function createGui() {
     };
 
     gui.add(gui.params, 'outputObjects');
-    gui.add(gui.params, 'force', 0.0, 32.0);
+    gui.add(gui.params, 'force', 0.0, 200.0);
 }
 

@@ -143,6 +143,11 @@ function createWalls() {
 }
 
 
+function createGoal() {
+    // TODO: Create a physics composed object...
+}
+
+
 function createSelector() {
     var geometry = new THREE.PlaneGeometry(2.5, 2.5, 1, 1);
 

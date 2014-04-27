@@ -1,14 +1,14 @@
 
 
 
-function createBall(cb) {
+function createBall() {
     // create hidden physics mesh
     var mesh = new Physijs.SphereMesh(
         new THREE.IcosahedronGeometry( 0.175, 1 ),
         Physijs.createMaterial(new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true }),
             0.8, 1.0
         ),
-        0.15
+        0.5
     );
 
     mesh.geometry.dynamic = false;
@@ -67,5 +67,5 @@ function pushBall(point) {
 
     var offset = new THREE.Vector3(-point.x, -point.y, -point.z);
 
-    ball.applyCentralImpulse(force, offset);
+    ball.applyImpulse(force, offset);
 }

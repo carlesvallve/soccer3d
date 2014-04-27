@@ -2,8 +2,15 @@ var THREE = window.THREE;
 
 var selectedAvatar;
 
-
-function createAvatar(num, colors, x, z, cb) {
+/**
+ * createAvatar creates physics avatar capsule/cylinder mesh and loads avatar model into it
+ * @param num
+ * @param colors
+ * @param x
+ * @param z
+ * @returns {CapsuleMesh}
+ */
+function createAvatar(num, colors, x, z) {
     /*var mesh = new Physijs.SphereMesh(
         new THREE.IcosahedronGeometry( 0.3, 1 ),
         Physijs.createMaterial(new THREE.MeshBasicMaterial({ color: colors[0], wireframe: true })
@@ -42,6 +49,13 @@ function createAvatar(num, colors, x, z, cb) {
 }
 
 
+/**
+ * loadAvatarModel loads avatar animated three.js model and returns the mesh when loaded
+ * @param parent
+ * @param num
+ * @param colors
+ * @param cb
+ */
 function loadAvatarModel(parent, num, colors, cb) {
     var loader = new THREE.JSONLoader();
     loader.load( 'assets/models/android-animations.json', function (geometry, materials) {
@@ -51,7 +65,7 @@ function loadAvatarModel(parent, num, colors, cb) {
 
         var color1 = new THREE.Color(colors[0]);
         var color2 = new THREE.Color(colors[1]);
-        var skinColor = color2; //new THREE.Color(0xcc9966);
+        var skinColor = color2 || new THREE.Color(0xcc9966);
 
         // paint body parts
         materials[1].color = skinColor; // head
@@ -83,7 +97,7 @@ function loadAvatarModel(parent, num, colors, cb) {
 }
 
 
-function animate(skinnedMesh) {
+/*function animate(skinnedMesh) {
     var materials = skinnedMesh.material.materials;
 
     for (var i in materials) {
@@ -93,9 +107,25 @@ function animate(skinnedMesh) {
     THREE.AnimationHandler.add(skinnedMesh.geometry.animation);
     var animation = new THREE.Animation(skinnedMesh, "morphTargets", THREE.AnimationHandler.CATMULLROM);
     animation.play();
+}*/
+
+
+/**
+ * selectAvatar records given avatar object and tweens camera to it
+ * @param avatar
+ */
+function selectAvatar(avatar) {
+    selectedAvatar = avatar;
+
+    moveCameraTo(avatar.position);
 }
 
 
+/**
+ * moveAvatar tweens avatar and camera to given point
+ * @param avatar
+ * @param point
+ */
 function moveAvatar(avatar, point) {
     // escape if position hasn't changed
     if (point.x === avatar.position.x && point.z === avatar.position.z) { return; }
@@ -112,9 +142,9 @@ function moveAvatar(avatar, point) {
 
     avatar.tweens.move = new TWEEN.Tween(avatar.position)
         .to(point, time)
-        //.easing(TWEEN.Easing.Exponential.Out)
+        .easing(TWEEN.Easing.Sinusoidal.InOut)
         .onComplete(function () { avatar.tweens.move = null; })
-        .start()
+        .start();
 
     // move camera target to point
     if (cameraTarget.tweens.move) { cameraTarget.tweens.move.stop(); }
@@ -123,6 +153,6 @@ function moveAvatar(avatar, point) {
         .to(new THREE.Vector3(point.x, cameraTarget.position.y, point.z), time)
         .easing(TWEEN.Easing.Sinusoidal.InOut)
         .onComplete(function () { cameraTarget.tweens.move = null; })
-        .start()
+        .start();
 }
 
