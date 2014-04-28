@@ -150,6 +150,6 @@ function rotateAvatarTo(avatar, point, speed) {
     avatar.rotation.y = oldAngle.y;
     //avatar.rotation.z = oldAngle.z;
 
-    rotateObjectTo(avatar, newAngle, 0, speed, true);
+    rotateObjectTo(avatar, newAngle, 0, speed* 3, true);
 }
 

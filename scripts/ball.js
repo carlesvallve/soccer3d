@@ -1,12 +1,14 @@
 var THREE = window.THREE;
 var Physijs = window.Physijs;
 
+var ballIsOut = false;
+
 function createBall() {
     // create hidden physics mesh
     var mesh = new Physijs.SphereMesh(
         new THREE.IcosahedronGeometry( 0.175, 1 ),
         Physijs.createMaterial(new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true }),
-            0.8, 1.0
+            0.8, 0.9
         ),
         0.5
     );
@@ -71,20 +73,53 @@ function pushBall(point) {
 }
 
 
-function moveBallTo(point, speed) {
+function checkForBallLimits() {
+    if (ballIsOut) { return; }
 
+    if (ball.position.x < 1.9 || ball.position.z < 1.9 || ball.position.x > gridW - 1.9 || ball.position.z > gridH - 1.9) {
+        console.log('OUT!');
+        ballIsOut = true;
+
+        // selectedAvatar = null;
+
+        var tween;
+        if (ball.position.x < 2 || ball.position.x > gridW - 2) { tween = sideThrow(); }
+        if (ball.position.z < 2 || ball.position.z > gridH - 2) { tween = goalKick(); }
+
+        tween.onStart(function () {
+            ball.setAngularVelocity(new THREE.Vector3(0, 0, 0));
+            ball.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+            scene.simulate();
+        });
+
+        tween.onComplete(function () {
+            ballIsOut = false;
+        });
+    }
 }
 
 
-function checkForBallLimits() {
-    /*var center = new THREE.Vector3(gridW/ 2, 0.175, gridH / 2);
-    ball.__dirtyRotation = true;
-    ball.__dirtyPosition = true;
+function sideThrow() {
+    // get side-throw point
+    var point;
+    if (ball.position.x < 2) { point = new THREE.Vector3(2, 0.175, Math.round(ball.position.z)); }
+    if (ball.position.x > gridW - 2) { point = new THREE.Vector3(gridW - 2, 0.175, Math.round(ball.position.z)); }
+
+    // locate ball at side-throw point
+    var tween = moveObjectTo(ball, point, 1000, 0, true);
+
+    return tween;
+}
 
 
+function goalKick() {
+    // get goal-kick point
+    var point;
+    if (ball.position.z < 2) { point = new THREE.Vector3(gridW / 2, 0.175, 4); }
+    if (ball.position.z > gridH - 2) { point = new THREE.Vector3(gridW / 2, 0.175, gridH - 4); }
 
-    moveBallTo(center, 0);
-    moveCameraTo(center, 25);
+    // locate ball at goal-kick point
+    var tween = moveObjectTo(ball, point, 1000, 0, true);
 
-    selectedAvatar = null;*/
+    return tween;
 }

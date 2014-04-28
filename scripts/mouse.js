@@ -12,14 +12,31 @@ so maybe we should cast a ray every onmousemove and get an array of points
 var projector = new THREE.Projector();
 var mouseVector = new THREE.Vector3();
 
+var mouseIsDown = false;
 
 window.document.addEventListener( 'mousedown', onMouseDown, false );
-//window.addEventListener( 'mousemove', onMouseMove, false );
-//window.addEventListener( 'mouseup', onMouseUp, false );
+window.document.addEventListener( 'mousemove', onMouseMove, false );
+window.document.addEventListener( 'mouseup', onMouseUp, false );
 
+function onMouseUp( e ) {
+    mouseIsDown = false;
+}
+
+function onMouseMove( e ) {
+    //if (mouseIsDown) {
+        //renderer.render(scene, camera);
+        //checkMouseIntersections(e, 'move');
+    //}
+}
 
 function onMouseDown( e ) {
-    event.preventDefault();
+    mouseIsDown = true;
+    checkMouseIntersections(e, 'down');
+}
+
+
+function checkMouseIntersections(e, mouseType) {
+    e.preventDefault();
 
     // mouse left button
 
@@ -40,18 +57,22 @@ function onMouseDown( e ) {
             if (!obj.name) { continue }
             if (obj.name === 'grid' || obj.name === 'sky') { continue; }
 
+            //if (obj.name === 'ball') { continue; }
+
             //console.log(obj.name);
 
-            // we selected the ball
-            if (obj.name === 'ball') {
-                pushBall(intersection.point);
-                return;
-            }
+            if (mouseType === 'down') {
+                // we selected the ball
+                if (obj.name === 'ball') {
+                    pushBall(intersection.point);
+                    return;
+                }
 
-            // we selected an avatar
-            if (obj.name.split('-')[0] === 'avatar') {
-                selectCell(intersection.point, obj);
-                return;
+                // we selected an avatar
+                if (obj.name.split('-')[0] === 'avatar') {
+                    selectCell(intersection.point, obj);
+                    return;
+                }
             }
 
             // we selected the pitch
@@ -78,6 +99,11 @@ function selectCell(point, avatar) {
     var x = Math.floor(point.x);
     var y = Math.floor(point.z);
     //console.log('selectCell(' + x + ',' + y +')');
+
+    /*var cell = { x: x, y: y };
+
+    if (cell.x === selectedCell && cell.y === selectedCell.y) { return; }
+    selectedCell = cell;*/
 
     // check for avatar selection
     if (avatar) {

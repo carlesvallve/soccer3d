@@ -149,7 +149,7 @@ function createGoal() {
 
 
 function createSelector() {
-    var geometry = new THREE.PlaneGeometry(2.5, 2.5, 1, 1);
+    var geometry = new THREE.PlaneGeometry(2.0, 2.0, 1, 1);
 
     var material = new THREE.MeshBasicMaterial({
         color: 0xffff00,

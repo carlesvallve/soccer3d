@@ -35,7 +35,7 @@ function createScene() {
     // create scene
     scene = new Physijs.Scene(); // { fixedTimeStep: 1 / 120 }
     scene.add(new THREE.AxisHelper(1));
-    scene.setGravity(new THREE.Vector3( 0, -12, 0 ));
+    scene.setGravity(new THREE.Vector3( 0, -20, 0 ));
 
     // create camera
     createCamera(scene);
@@ -62,6 +62,7 @@ function createRenderer() {
 
 
 function render() {
+    // update libs
     controls.update();
     stats.update();
     TWEEN.update();
@@ -70,11 +71,6 @@ function render() {
     // TODO: Friction should take care of this (?)
     ball.setAngularVelocity(ball.getAngularVelocity().multiplyScalar(0.9));
     checkForBallLimits();
-
-    // update avatars
-    // set all avatars to 'dirty' physics so we can move them freely
-    //liberateAvatarsFromPhysics(team1);
-    //liberateAvatarsFromPhysics(team2);
 
     // update selected avatar
     if (selectedAvatar) {
@@ -87,13 +83,14 @@ function render() {
     //cameraTarget.position.x = ball.position.x;
     //cameraTarget.position.z = ball.position.z;
 
-
+    // update physics
     scene.simulate(undefined, 1); // { timeStep: timeStep, maxSubSteps: maxSubSteps }
 
+    // render
     renderer.render(scene, camera);
+
+    // request next frame
     requestAnimationFrame(render);
-
-
 }
 
 
