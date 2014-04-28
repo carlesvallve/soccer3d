@@ -47,7 +47,8 @@ function createScene() {
     // create skybox
     createSkyBox();
 
-    //initMouse();
+    // create hud
+    createHud();
 }
 
 
@@ -91,6 +92,11 @@ function render() {
 
     // request next frame
     requestAnimationFrame(render);
+
+    if (mouseIsDown && selectedAvatar) {
+        selectedAvatar.force += 1;
+        hud.force.innerText = 'Force ' + selectedAvatar.force;
+    }
 }
 
 

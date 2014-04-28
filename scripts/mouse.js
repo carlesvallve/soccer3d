@@ -13,29 +13,40 @@ var projector = new THREE.Projector();
 var mouseVector = new THREE.Vector3();
 
 var mouseIsDown = false;
+var selectedPoint;
 
 window.document.addEventListener( 'mousedown', onMouseDown, false );
-window.document.addEventListener( 'mousemove', onMouseMove, false );
+//window.document.addEventListener( 'mousemove', onMouseMove, false );
 window.document.addEventListener( 'mouseup', onMouseUp, false );
+
 
 function onMouseUp( e ) {
     mouseIsDown = false;
+    if (selectedAvatar && selectedPoint) {
+        moveAvatarTo(selectedAvatar, selectedPoint, 100);
+    }
+
 }
 
-function onMouseMove( e ) {
-    //if (mouseIsDown) {
-        //renderer.render(scene, camera);
-        //checkMouseIntersections(e, 'move');
-    //}
-}
+
+//function onMouseMove( e ) {}
+
 
 function onMouseDown( e ) {
     mouseIsDown = true;
-    checkMouseIntersections(e, 'down');
+    selectedPoint = null;
+    checkMouseIntersections(e);
+
+    if (selectedAvatar && selectedPoint) {
+        selectedAvatar.force = 0;
+        rotateAvatarTo(selectedAvatar, selectedPoint, 100);
+    }
+
+    //checkMouseIntersections(e, 'down');
 }
 
 
-function checkMouseIntersections(e, mouseType) {
+function checkMouseIntersections(e) {
     e.preventDefault();
 
     // mouse left button
@@ -57,23 +68,23 @@ function checkMouseIntersections(e, mouseType) {
             if (!obj.name) { continue }
             if (obj.name === 'grid' || obj.name === 'sky') { continue; }
 
-            //if (obj.name === 'ball') { continue; }
+            if (obj.name === 'ball') { continue; }
 
             //console.log(obj.name);
 
-            if (mouseType === 'down') {
-                // we selected the ball
-                if (obj.name === 'ball') {
-                    pushBall(intersection.point);
-                    return;
-                }
-
-                // we selected an avatar
-                if (obj.name.split('-')[0] === 'avatar') {
-                    selectCell(intersection.point, obj);
-                    return;
-                }
+            // we selected the ball
+            if (obj.name === 'ball') {
+                pushBall(intersection.point);
+                return;
             }
+
+            // we selected an avatar
+            if (obj !== selectedAvatar && obj.name.split('-')[0] === 'avatar') {
+                //selectCell(intersection.point, obj);
+                selectAvatar(obj);
+                return;
+            }
+
 
             // we selected the pitch
             if (obj.name === 'pitch') {
@@ -96,8 +107,8 @@ function selectCell(point, avatar) {
     if (point.y < -0.01) { return; }
 
     // get cell coords
-    var x = Math.floor(point.x);
-    var y = Math.floor(point.z);
+    //var x = point.x; // Math.floor(point.x);
+    //var y = point.z; // Math.floor(point.z);
     //console.log('selectCell(' + x + ',' + y +')');
 
     /*var cell = { x: x, y: y };
@@ -106,12 +117,12 @@ function selectCell(point, avatar) {
     selectedCell = cell;*/
 
     // check for avatar selection
-    if (avatar) {
+    /*if (avatar) {
         selectAvatar(avatar);
     } else {
         // check if the cell is ocuppied by an avatar and i so, select it
         scene.traverse(function(e) {
-            if (Math.floor(e.position.x) === x && Math.floor(e.position.z) === y) {
+            //if (Math.floor(e.position.x) === x && Math.floor(e.position.z) === y) {
                 if (e.name.split('-')[0] === 'avatar' ) {
                     selectAvatar(e);
                     return;
@@ -120,15 +131,16 @@ function selectCell(point, avatar) {
                     selectAvatar(e.parent);
                     return;
                 }
-            }
+            //}
         });
-    }
+    }*/
 
     // escape if no avatar is selected
     if (!selectedAvatar) { return; }
 
     // record goal 3d point
-    moveAvatarTo(selectedAvatar, new THREE.Vector3( x + 0.5, selectedAvatar.position.y, y + 0.5), 100);
+    //moveAvatarTo(selectedAvatar, new THREE.Vector3( x, selectedAvatar.position.y, y), 100);
+    selectedPoint = new THREE.Vector3(point.x, selectedAvatar.position.y, point.z);
 }
 
 

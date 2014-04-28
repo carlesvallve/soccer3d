@@ -12,14 +12,23 @@ var selectedAvatar;
  * @returns {CapsuleMesh}
  */
 function createAvatar(num, colors, x, z) {
-    // create hidden physics capsule mesh
+    // create capsule mesh
     var mesh = new Physijs.CapsuleMesh(
-        new THREE.CylinderGeometry(0.3, 0.3, 0.8), // (radiusTop, radiusBottom, height, radiusSegments, heightSegments, openEnded)
+        new THREE.CylinderGeometry(0.4, 0.4, 0.8, 32), // (radiusTop, radiusBottom, height, radiusSegments, heightSegments, openEnded)
         Physijs.createMaterial(new THREE.MeshBasicMaterial({ color: colors[0], wireframe: true }),
             0.8, 0.5
         ),
         0
     );
+
+    // create cube mesh
+    /*var mesh = new Physijs.BoxMesh(
+        new THREE.BoxGeometry(0.5, 0.8, 0.5),
+        Physijs.createMaterial(new THREE.MeshBasicMaterial({ color: colors[0], wireframe: true }),
+            0.8, 0.5
+        ),
+        0
+    );*/
 
     mesh.geometry.dynamic = false;
 
@@ -30,6 +39,15 @@ function createAvatar(num, colors, x, z) {
 
     mesh.tweens = {};
     scene.add(mesh);
+
+    mesh.addEventListener( 'collision', function( other_object, linear_velocity, angular_velocity ) {
+
+        //console.log(other_object);
+        if (mesh === selectedAvatar && other_object.name === 'ball') {
+            kickBall(mesh, linear_velocity, angular_velocity);
+        }
+
+    });
 
     // load the ball model
     loadAvatarModel(mesh, num, colors, function (model) {
@@ -108,6 +126,7 @@ function loadAvatarModel(parent, num, colors, cb) {
  */
 function selectAvatar(avatar) {
     selectedAvatar = avatar;
+    selectedAvatar.force = 0;
 
     moveCameraTo(avatar.position, 0, 25);
 }
@@ -123,9 +142,10 @@ function moveAvatarTo(avatar, point, speed) {
     // escape if position hasn't changed
     if (point.x === avatar.position.x && point.z === avatar.position.z) { return; }
 
-    rotateAvatarTo(avatar, point, 100);
-    moveObjectTo(avatar, point, 0, speed, true);
-    moveCameraTo(point, 0, speed);
+    var delay = 100;
+    //rotateAvatarTo(avatar, point, delay);
+    moveObjectTo(avatar, point, delay, speed, true);
+    moveCameraTo(point, delay, speed);
 }
 
 
@@ -150,6 +170,6 @@ function rotateAvatarTo(avatar, point, speed) {
     avatar.rotation.y = oldAngle.y;
     //avatar.rotation.z = oldAngle.z;
 
-    rotateObjectTo(avatar, newAngle, 0, speed* 3, true);
+    rotateObjectTo(avatar, newAngle, 0, speed, true);
 }
 

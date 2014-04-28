@@ -55,6 +55,30 @@ function loadBallModel(parent, cb) {
 }
 
 
+function kickBall(avatar, linear_velocity, angular_velocity) {
+    var force = selectedAvatar.force * 0.5; // * 0.5; //7.5;
+
+    // get direction vector
+    var dir = new THREE.Vector3(
+        ball.position.x - avatar.position.x,
+        0, //-0.5,
+        ball.position.z - avatar.position.z
+    ).normalize();
+
+    /*var point = dir.clone();
+        point.y = 16;*/
+
+    // get direction vector length
+    //dir.multiplyScalar(force);
+
+    // apply kick impulse
+    //ball.applyCentralImpulse(dir);
+    ball.applyImpulse(dir.multiplyScalar(force), dir);
+
+    //console.log('kickBall', dir.x, dir.y, dir.z);
+}
+
+
 function pushBall(point) {
     ball.setLinearVelocity(new THREE.Vector3(0, 0, 0));
     //ball.setAngularVelocity(new THREE.Vector3(0, 0, 0));
