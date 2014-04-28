@@ -38,6 +38,7 @@ function onMouseDown( e ) {
     checkMouseIntersections(e);
 
     if (selectedAvatar && selectedPoint) {
+        ballSelector.visible = true;
         selectedAvatar.force = 0;
         rotateAvatarTo(selectedAvatar, selectedPoint, 100);
     }

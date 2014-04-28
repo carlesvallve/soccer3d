@@ -10,8 +10,9 @@ function createPitch() {
         walls: createWalls()
     };
 
-    // create selector
-    selector = createSelector();
+    // create selectors
+    avatarSelector = createSelector(0x00ffff);
+    ballSelector = createSelector(0xffff00);
 
     // create ball
     ball = createBall();
@@ -148,15 +149,15 @@ function createGoal() {
 }
 
 
-function createSelector() {
+function createSelector(color) {
     var geometry = new THREE.PlaneGeometry(2.0, 2.0, 1, 1);
 
     var material = new THREE.MeshBasicMaterial({
-        color: 0xffff00,
+        color: color,
         map: new THREE.ImageUtils.loadTexture( 'assets/textures/particles/particle4u.png'),
         transparent: true,
         blending: THREE.AdditiveBlending,
-        opacity: 0.75,
+        opacity: 1,
         depthWrite: false
         //depthTest: false
     });

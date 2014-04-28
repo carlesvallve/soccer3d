@@ -146,8 +146,11 @@ function moveAvatarTo(avatar, point, speed) {
     if (point.x === avatar.position.x && point.z === avatar.position.z) { return; }
 
     var delay = 100;
-    //rotateAvatarTo(avatar, point, delay);
-    moveObjectTo(avatar, point, delay, speed, true);
+
+    moveObjectTo(avatar, point, delay, speed, true, function () {
+        ballSelector.visible = false;
+    });
+
     moveCameraTo(point, delay, speed);
 }
 

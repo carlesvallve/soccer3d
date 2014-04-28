@@ -13,7 +13,7 @@ var SCREEN_WIDTH = window.innerWidth - 10;
 var SCREEN_HEIGHT = window.innerHeight - 10;
 
 var renderer, controls, stats, gui;
-var scene, camera, pitch, ball, selector;
+var scene, camera, pitch, ball, avatarSelector, ballSelector;
 var gridW = 35, gridH = 44, tileSize = 1;
 
 
@@ -84,9 +84,16 @@ function render() {
 
     // update selected avatar
     if (selectedAvatar) {
-        selector.position.x = selectedAvatar.position.x;
-        selector.position.z = selectedAvatar.position.z;
-        selector.rotation.z += 0.03;
+        avatarSelector.position.x = selectedAvatar.position.x;
+        avatarSelector.position.z = selectedAvatar.position.z;
+        avatarSelector.rotation.z += 0.03;
+    }
+
+    // update point selector
+    if (selectedPoint && ballSelector.visible) {
+        ballSelector.position.x = selectedPoint.x;
+        ballSelector.position.z = selectedPoint.z;
+        ballSelector.rotation.z -= 0.03;
     }
 
     // update camera
@@ -118,8 +125,8 @@ function createControls() {
     controls.minDistance = 4;
     controls.maxDistance = 60;
 
-    controls.minPolarAngle = 0; // radians
-    controls.maxPolarAngle = Math.PI / 2; // radians
+    controls.minPolarAngle = 0;
+    controls.maxPolarAngle = Math.PI / 2;
 
     //controls.addEventListener( 'change', function () { console.log('changing'); });
 }
