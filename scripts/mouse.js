@@ -41,8 +41,6 @@ function onMouseDown( e ) {
         selectedAvatar.force = 0;
         rotateAvatarTo(selectedAvatar, selectedPoint, 100);
     }
-
-    //checkMouseIntersections(e, 'down');
 }
 
 
@@ -80,7 +78,6 @@ function checkMouseIntersections(e) {
 
             // we selected an avatar
             if (obj !== selectedAvatar && obj.name.split('-')[0] === 'avatar') {
-                //selectCell(intersection.point, obj);
                 selectAvatar(obj);
                 return;
             }

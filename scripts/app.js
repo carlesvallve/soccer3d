@@ -73,6 +73,15 @@ function render() {
     ball.setAngularVelocity(ball.getAngularVelocity().multiplyScalar(0.9));
     checkForBallLimits();
 
+    // select nearest avatar to ball
+    selectNearestAvatarToBall();
+
+    // increase force during mouse-down
+    if (mouseIsDown && selectedAvatar) {
+        selectedAvatar.force += 1;
+        hud.force.innerText = 'Force ' + selectedAvatar.force;
+    }
+
     // update selected avatar
     if (selectedAvatar) {
         selector.position.x = selectedAvatar.position.x;
@@ -81,8 +90,8 @@ function render() {
     }
 
     // update camera
-    //cameraTarget.position.x = ball.position.x;
-    //cameraTarget.position.z = ball.position.z;
+    cameraTarget.position.x = ball.position.x;
+    cameraTarget.position.z = ball.position.z;
 
     // update physics
     scene.simulate(undefined, 1); // { timeStep: timeStep, maxSubSteps: maxSubSteps }
@@ -93,10 +102,9 @@ function render() {
     // request next frame
     requestAnimationFrame(render);
 
-    if (mouseIsDown && selectedAvatar) {
-        selectedAvatar.force += 1;
-        hud.force.innerText = 'Force ' + selectedAvatar.force;
-    }
+
+
+
 }
 
 

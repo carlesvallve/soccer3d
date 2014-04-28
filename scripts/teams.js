@@ -1,6 +1,6 @@
 var THREE = window.THREE;
 
-var team1, team2;
+var team1, team2, avatars = [];
 
 function createTeam(num, field, formation, colors) {
     console.log('TEAM', num + ':', formation.system);
@@ -11,6 +11,7 @@ function createTeam(num, field, formation, colors) {
     // set team object
     var team = {
         num: num,
+        field: field,
         formation: formation,
         colors: colors,
         players: []
@@ -30,7 +31,9 @@ function createTeam(num, field, formation, colors) {
         if (field === 'bottom') { z = gridH - 1 - z; }
 
         // create avatar
-        team.players.push(createAvatar(i, colors, x, z ));
+        var avatar = createAvatar(i, colors, x, z );
+        team.players.push(avatar);
+        avatars.push(avatar);
     }
 
     return team;
@@ -44,11 +47,19 @@ function getRandomFormation() {
 }
 
 
-function liberateAvatarsFromPhysics(team) {
-    for (var i = 0; i < 11; i++) {
-        var avatar = team.players[i];
-        avatar.__dirtyRotation = true;
-        avatar.__dirtyPosition = true;
+function selectNearestAvatarToBall() {
+    var selected;
+    var minDist = 1000;
+    for (var i = 0; i < avatars.length; i++) {
+        var avatar = avatars[i];
+        var dist = avatar.position.distanceTo(ball.position);
+        if (dist <= minDist) {
+            selected = avatar;
+            minDist = dist;
+        }
     }
 
+    if (selected && selected !== selectedAvatar) {
+        selectAvatar(selected);
+    }
 }

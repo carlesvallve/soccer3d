@@ -37,6 +37,9 @@ function createAvatar(num, colors, x, z) {
     mesh.position.y = 0.4; //-0.02;
     mesh.position.z = 0.5 + z;
 
+    //mesh.num = num;
+    //mesh.team = team;
+
     mesh.tweens = {};
     scene.add(mesh);
 
