@@ -23,15 +23,21 @@ function createTeam(num, field, formation, colors) {
         var pos = formation.positions[i - 1];
         var x = Math.floor(4 + pos.x / 12);
         var z = Math.floor(- 6 + gridH - pos.y / 10);
+        var rot = 0;
 
         // apply spacing
         if (i > 1) { z = Math.floor(z * formation.spacing); }
 
         // apply field
-        if (field === 'bottom') { z = gridH - 1 - z; }
+        if (field === 'bottom') {
+            z = gridH - 1 - z;
+            rot = Math.PI;
+        }
 
         // create avatar
-        var avatar = createAvatar(i, colors, x, z );
+        var avatar = createAvatar(team, i, colors, x, z, rot);
+
+
         team.players.push(avatar);
         avatars.push(avatar);
     }
@@ -63,3 +69,5 @@ function selectNearestAvatarToBall() {
         selectAvatar(selected);
     }
 }
+
+

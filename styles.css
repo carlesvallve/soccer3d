@@ -21,3 +21,18 @@ body {
     font-weight: bold;
     color: #0ff;
 }
+
+.avatarLabel {
+    position: absolute;
+    left: 0; top: 0;
+
+
+    font-family: Verdana;
+    font-size: 8px;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+
+    //background-color: #000;
+    width: 16px;
+}

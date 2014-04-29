@@ -11,7 +11,7 @@ var selectedAvatar;
  * @param z
  * @returns {CapsuleMesh}
  */
-function createAvatar(num, colors, x, z) {
+function createAvatar(team, num, colors, x, z, rot) {
     // create capsule mesh
     var mesh = new Physijs.CapsuleMesh(
         new THREE.CylinderGeometry(0.4, 0.4, 0.8, 32), // (radiusTop, radiusBottom, height, radiusSegments, heightSegments, openEnded)
@@ -36,6 +36,7 @@ function createAvatar(num, colors, x, z) {
     mesh.position.x = 0.5 + x;
     mesh.position.y = 0.4; //-0.02;
     mesh.position.z = 0.5 + z;
+    mesh.rotation.y = rot;
 
     //mesh.num = num;
     //mesh.team = team;
@@ -57,6 +58,11 @@ function createAvatar(num, colors, x, z) {
         mesh.model = model;
         mesh.visible = false;
     });
+
+    // create avatar label
+    var label = textSprite(num, {});
+    label.position.y += 0.65;
+    mesh.add(label);
 
     return mesh;
 }
@@ -147,9 +153,16 @@ function moveAvatarTo(avatar, point, speed) {
 
     var delay = 100;
 
-    moveObjectTo(avatar, point, delay, speed, true, function () {
-        ballSelector.visible = false;
-    });
+    moveObjectTo(avatar, point, delay, speed, true,
+        function () {
+            ballSelector.visible = false;
+        }
+    );
+
+    /*avatar.tweens.move.onUpdate(function () {
+       var vec = toXYCoords(avatar.position);
+       avatar.label.style.transform = 'translate( ' + vec.x + 'px, ' + vec.y + 'px)';
+    });*/
 
     moveCameraTo(point, delay, speed);
 }

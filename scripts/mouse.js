@@ -16,7 +16,7 @@ var mouseIsDown = false;
 var selectedPoint;
 
 window.document.addEventListener( 'mousedown', onMouseDown, false );
-//window.document.addEventListener( 'mousemove', onMouseMove, false );
+window.document.addEventListener( 'mousemove', onMouseMove, false );
 window.document.addEventListener( 'mouseup', onMouseUp, false );
 
 
@@ -29,7 +29,11 @@ function onMouseUp( e ) {
 }
 
 
-//function onMouseMove( e ) {}
+function onMouseMove( e ) {
+    if (mouseIsDown) {
+        checkMouseIntersections(e);
+    }
+}
 
 
 function onMouseDown( e ) {
@@ -139,6 +143,10 @@ function selectCell(point, avatar) {
     // record goal 3d point
     //moveAvatarTo(selectedAvatar, new THREE.Vector3( x, selectedAvatar.position.y, y), 100);
     selectedPoint = new THREE.Vector3(point.x, selectedAvatar.position.y, point.z);
+
+
+
+
 }
 
 
@@ -146,14 +154,16 @@ function selectCell(point, avatar) {
 // ************************************************************************
 
 
-function createArrowHelper() {
+function createArrowHelper(color) {
     // create movement arrow
-    /*var dir = new THREE.Vector3( x + 0.5 - selectedAvatar.position.x , 0, y + 0.5 - selectedAvatar.position.z );
-     var origin = new THREE.Vector3( selectedAvatar.position.x, 0.005, selectedAvatar.position.z );
-     var length = origin.distanceTo(new THREE.Vector3(x + 0.5, 0.005, y + 0.5));
-     var color = 0xff9900; // Math.floor(Math.random() * 16777215);
-     var arrowHelper = new THREE.ArrowHelper( dir, origin, length, color, 0.1, 0.1 );
-     grid.add( arrowHelper );*/
+    var dir = new THREE.Vector3(0, 0, 1); // x + 0.5 - selectedAvatar.position.x , 0, y + 0.5 - selectedAvatar.position.z );
+    var origin = new THREE.Vector3(gridW / 2, 0.005, gridH / 2); // selectedAvatar.position.x, 0.005, selectedAvatar.position.z );
+    var length = 5; //origin.distanceTo(new THREE.Vector3(x + 0.5, 0.005, y + 0.5));
+    // var color = 0xff9900; // Math.floor(Math.random() * 16777215);
+    var arrowHelper = new THREE.ArrowHelper( dir, origin, length, color, 0.3, 0.3 );
+    scene.add( arrowHelper );
+
+    return arrowHelper;
 }
 
 

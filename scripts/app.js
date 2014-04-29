@@ -13,7 +13,7 @@ var SCREEN_WIDTH = window.innerWidth - 10;
 var SCREEN_HEIGHT = window.innerHeight - 10;
 
 var renderer, controls, stats, gui;
-var scene, camera, pitch, ball, avatarSelector, ballSelector;
+var scene, camera, pitch, ball, avatarSelector, ballSelector, arrowHelper;
 var gridW = 35, gridH = 44, tileSize = 1;
 
 
@@ -42,7 +42,7 @@ function createScene() {
 
     // create lights
     createHemiLight(scene, new THREE.Vector3(gridW / 2, 60, gridH / 2), 0x666666, 0xffffff, 0.5);
-    createSpotLight(scene, new THREE.Vector3(gridW * 1.25, 40, gridH * 1.25), 0xffffff, 1.6);
+    createSpotLight(scene, new THREE.Vector3(gridW * 1.25, 40, gridH * 1.25), 0xffffff, 1.8);
 
     // create skybox
     createSkyBox();
@@ -79,6 +79,7 @@ function render() {
     // increase force during mouse-down
     if (mouseIsDown && selectedAvatar) {
         selectedAvatar.force += 1;
+        if (selectedAvatar.force > 30) { selectedAvatar.force = 30; }
         hud.force.innerText = 'Force ' + selectedAvatar.force;
     }
 
@@ -94,6 +95,15 @@ function render() {
         ballSelector.position.x = selectedPoint.x;
         ballSelector.position.z = selectedPoint.z;
         ballSelector.rotation.z -= 0.03;
+
+        if (selectedAvatar.force > 0) {
+            ballSelector.scale.set(selectedAvatar.force * 0.1, selectedAvatar.force * 0.1, 1);
+        }
+
+        //ballSelector.scale.setY(selectedAvatar.force * 0.1);
+        /*arrowHelper.position.set(ball.position.x, arrowHelper.position.y, ball.position.z); //setOrigin(selectedPoint);
+        arrowHelper.setDirection(dir);
+        if (force > 0) { arrowHelper.setLength(force); }*/
     }
 
     // update camera

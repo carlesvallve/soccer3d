@@ -11,8 +11,9 @@ function createPitch() {
     };
 
     // create selectors
-    avatarSelector = createSelector(0x00ffff);
-    ballSelector = createSelector(0xffff00);
+    avatarSelector = createSelector('particle4u.png', 2, 0x00ffff, 1);
+    ballSelector = createSelector('particle.png', 2, 0xff9900, 0.5);
+    //arrowHelper = createArrowHelper(0xff9900);
 
     // create ball
     ball = createBall();
@@ -149,15 +150,15 @@ function createGoal() {
 }
 
 
-function createSelector(color) {
-    var geometry = new THREE.PlaneGeometry(2.0, 2.0, 1, 1);
+function createSelector(image, size, color, opacity) {
+    var geometry = new THREE.PlaneGeometry(size, size, 1, 1);
 
     var material = new THREE.MeshBasicMaterial({
         color: color,
-        map: new THREE.ImageUtils.loadTexture( 'assets/textures/particles/particle4u.png'),
+        map: new THREE.ImageUtils.loadTexture( 'assets/textures/particles/' + image),
         transparent: true,
         blending: THREE.AdditiveBlending,
-        opacity: 1,
+        opacity: opacity,
         depthWrite: false
         //depthTest: false
     });

@@ -65,11 +65,6 @@ function kickBall(avatar, linear_velocity, angular_velocity) {
         ball.position.z - avatar.position.z
     ).normalize();
 
-    /*var point = dir.clone();
-        point.y = 16;*/
-
-    // get direction vector length
-    //dir.multiplyScalar(force);
 
     // apply kick impulse
     //ball.applyCentralImpulse(dir);
